@@ -5,7 +5,8 @@
  *   [data-scrollcraft-section]       sections that drive morph progress (data-scrollcraft-shape = 0..3)
  *   [data-track]                     headlines whose letter-spacing tightens as they reach screen centre
  *   [data-project-url]               roster slots; a non-empty URL turns the slot into a live link
- * All triangle morphing runs on the GPU (one draw call); JS only updates a few uniforms per frame.
+ * All morphing, simplex-noise mist and mouse repulsion run in the vertex shader (one draw call); JS only updates a few uniforms per frame.
+ * Mouse/touch: [pointermove] + [touchstart] feed an 8-slot ring of impulses (uM); each impulse pushes and swirls nearby particles, then decays so they drift back.
  */
 (() => {
   'use strict';
@@ -29,29 +30,51 @@
   };
 
   const SHAPES = [
-    /* 0 · desktop workstation: monitor, screen inset, stand, base, desk, keyboard, mouse, tower, mug */
-    [].concat(box(0,.5,0,2.0,1.2,.08), box(0,.5,.05,1.8,1.0,.01), box(0,-.25,-.05,.15,.5,.1), box(0,-.5,-.05,.7,.04,.4),
-      box(0,-.56,.2,3.4,.03,1.5), box(0,-.5,.65,1.3,.05,.4), box(.95,-.5,.65,.15,.05,.24), box(-1.55,-.1,-.1,.4,1.3,.6), box(1.5,-.4,.1,.2,.3,.2)),
-    /* 1 · cargo vessel: prismatic hull, container stacks, bridge, funnel, mast, waves */
+    /* 0 · desktop workstation: bezel layers, on-screen windows, rear hump, neck, base, desk + legs, keycap grid, mouse, tower with drive bays, speakers, mug */
     (() => {
-      const hull = prism([[-1.3,.1],[1.1,.1],[1.55,.1],[1.15,-.35],[-1.2,-.35]], -.45, .45);
-      const boxes = [];
-      for (let i = 0; i < 5; i++) for (let l = 0; l < 2; l++) for (const z of [-.2, .2]) boxes.push(...box(-1.05 + i*.42, .21 + l*.22, z, .38, .2, .34));
-      boxes.push(...box(1.0,.4,0,.42,.6,.7), ...box(.9,.85,0,.16,.3,.16), ...box(1.0,1.05,0,.03,.5,.03));
-      const waves = [];
-      for (let z = -.8; z <= .8; z += .4) for (let x = -1.6; x < 1.6; x += .4) waves.push([[x,-.45,z],[x+.2,-.38,z]], [[x+.2,-.38,z],[x+.4,-.45,z]]);
-      return [].concat(hull, boxes, waves);
-    })(),
-    /* 2 · coordinate pillars on a floor axis grid */
-    (() => {
-      const e = [];
-      for (let i = 0; i < 7; i++) { const h = 1 + (i % 4) * .5 + i * .12; e.push(...box(-2.4 + i*.8, -1 + h/2, ((i % 2) * 2 - 1) * .5, .22, h, .22)); }
-      for (let z = -.9; z <= .9; z += .6) e.push([[-2.8,-1,z],[2.8,-1,z]]);
-      for (let x = -2.8; x <= 2.8; x += .8) e.push([[x,-1,-.9],[x,-1,.9]]);
+      const e = [].concat(
+        box(0,.5,0,2.0,1.2,.08), box(0,.5,.05,1.84,1.04,.02), box(0,.5,.07,1.7,.92,.005), box(0,-.05,.06,.14,.03,.01),
+        box(-.35,.62,.08,.7,.5,.005), box(.5,.5,.08,.55,.36,.005), box(-.35,.2,.08,.7,.14,.005),
+        box(0,.5,-.12,.9,.6,.16), box(0,-.2,-.08,.16,.55,.08), box(0,-.5,-.02,.8,.04,.45),
+        box(0,-.56,.2,3.4,.03,1.5), box(-1.6,-.9,-.4,.06,.7,.06), box(1.6,-.9,-.4,.06,.7,.06), box(-1.6,-.9,.8,.06,.7,.06), box(1.6,-.9,.8,.06,.7,.06),
+        box(0,-.5,.68,1.4,.05,.44), box(1.05,-.5,.68,.15,.05,.24),
+        box(-1.55,-.1,-.1,.4,1.3,.6), box(-1.55,.35,.21,.3,.06,.02), box(-1.55,.2,.21,.3,.06,.02), box(-1.55,-.35,.21,.06,.06,.02),
+        box(-1.15,-.3,-.15,.22,.5,.24), box(1.15,-.3,-.15,.22,.5,.24), box(1.6,-.4,.15,.2,.3,.2), box(1.74,-.4,.15,.08,.16,.02));
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 12; c++) e.push(...box(-.6 + c*.109, -.46, .55 + r*.1, .09, .02, .08));
       return e;
     })(),
-    /* 3 · exclamation block: tapered bar + cube dot */
-    [].concat(box(0,.45,0,.5,1.6,.4), box(0,.45,0,.32,1.6,.24), box(0,-.75,0,.5,.5,.4))
+    /* 1 · cargo vessel: hull ribs + keel + tapering bow (volumetric), deck, container stacks, bridge, funnel, mast, wake */
+    (() => {
+      const e = [], hw = x => .45 * Math.min(1, Math.max(0, (1.6 - x) / .55));       // half-beam tapers toward the bow
+      const ring = x => { const w = hw(x), k = w * .65; return [[x,.1,-w],[x,.1,w],[x,-.35,k],[x,-.35,-k]]; };
+      const xs = []; for (let x = -1.3; x <= 1.58; x += .12) xs.push(x);
+      xs.forEach((x, i) => {
+        const r = ring(x); r.forEach((p, k) => e.push([p, r[(k+1)%4]]));
+        if (i) { const q = ring(xs[i-1]); r.forEach((p, k) => e.push([q[k], p])); }
+      });
+      for (let x = -1.2; x <= 1.2; x += .3) e.push([[x,.1,-hw(x)],[x,.1,hw(x)]]);
+      for (let i = 0; i < 6; i++) for (let l = 0; l < 3; l++) for (const z of [-.24, 0, .24]) e.push(...box(-1.1 + i*.34, .2 + l*.2, z, .3, .18, .21));
+      e.push(...box(1.0,.42,0,.44,.64,.7), ...box(1.0,.8,0,.5,.06,.76), ...box(.92,1.0,0,.18,.32,.18), ...box(1.05,1.3,0,.03,.5,.03), ...box(1.05,1.5,0,.24,.02,.02), ...box(1.35,.16,0,.14,.06,.3));
+      for (let z = -.9; z <= .9; z += .3) for (let x = -1.7; x < 1.7; x += .34) e.push([[x,-.45,z],[x+.17,-.38,z]], [[x+.17,-.38,z],[x+.34,-.45,z]]);
+      return e;
+    })(),
+    /* 2 · coordinate pillars with caps on a floor axis grid + axis arrows */
+    (() => {
+      const e = [];
+      for (let i = 0; i < 7; i++) { const h = 1 + (i % 4) * .5 + i * .12, x = -2.4 + i*.8, z = ((i % 2) * 2 - 1) * .5;
+        e.push(...box(x, -1 + h/2, z, .22, h, .22), ...box(x, -1 + h + .03, z, .34, .05, .34), ...box(x, -1 + h/2, z, .1, h, .1)); }
+      for (let z = -.9; z <= .9; z += .3) e.push([[-2.8,-1,z],[2.8,-1,z]]);
+      for (let x = -2.8; x <= 2.8; x += .4) e.push([[x,-1,-.9],[x,-1,.9]]);
+      e.push([[-2.8,-1,-.9],[-2.8,1.6,-.9]], [[2.8,-1,-.9],[2.8,1.6,-.9]]);
+      return e;
+    })(),
+    /* 3 · exclamation block: stacked tapering slabs + double-walled cube dot (vibrates in the shader) */
+    (() => {
+      const e = [];
+      for (let i = 0; i < 8; i++) e.push(...box(0, 1.15 - i*.2, 0, .6 - .04*i, .2, .46 - .03*i));
+      e.push(...box(0,-.75,0,.5,.5,.4), ...box(0,-.75,0,.34,.34,.26));
+      return e;
+    })()
   ];
 
   const edgeSampler = edges => {
@@ -78,7 +101,7 @@
   const camera = new THREE.PerspectiveCamera(45, 1, .1, 100);
   camera.position.z = 7;
 
-  const MAIN = MOBILE ? 700 : 2800, AMB = MOBILE ? 120 : 420, N = MAIN + AMB;
+  const MAIN = MOBILE ? 1500 : 8000, AMB = MOBILE ? 250 : 600, N = MAIN + AMB;
   const MAINC = [0x8052ff, 0xffb829, 0x15846e], AMBC = [0x8052ff, 0xffb829, 0x15846e, 0x3b2a8f, 0x2f4fd0, 0x5a2d91];
   const CORNER = [0,1,1,2,2,0].map(i => [Math.cos(Math.PI/2 + i*2.0944), Math.sin(Math.PI/2 + i*2.0944), 0]);
 
@@ -89,7 +112,7 @@
     const amb = p >= MAIN, seed = Math.random();
     const hex = new THREE.Color((amb ? AMBC : MAINC)[(Math.random() * (amb ? AMBC : MAINC).length) | 0]);
     const pts = amb ? (() => { const q = [(Math.random()-.5)*26, (Math.random()-.5)*16, -6 - Math.random()*10]; return [q,q,q,q]; })() : samplers.map(s => s());
-    const size = (amb ? .06 + Math.random()*.08 : .03 + Math.random()*.05) * (MOBILE ? 1.35 : 1);   // fewer, slightly larger glyphs on phones
+    const size = (amb ? .06 + Math.random()*.08 : .022 + Math.random()*.04) * (MOBILE ? 1.5 : 1);   // finer glyphs for the dense desktop cloud
     for (let k = 0; k < 6; k++) {
       const v = p*6 + k;
       A.c.set(CORNER[k].map(c => c*size), v*3);
@@ -107,36 +130,84 @@
   geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 100);
 
   const U = {
-    uP: { value: 0 }, uTime: { value: 0 }, uSpin: { value: 0 }, uAlpha: { value: 1 },
+    uP: { value: 0 }, uTime: { value: 0 }, uSpinAngle: { value: 0 }, uVib: { value: 0 }, uAlpha: { value: 1 },
+    uAspect: { value: 1 }, uTan: { value: Math.tan(THREE.MathUtils.degToRad(22.5)) }, uCamZ: { value: 7 }, uRad: { value: MOBILE ? 1.1 : .9 },
+    uM: { value: Array.from({ length: 8 }, () => new THREE.Vector3(0, 0, -100)) },      // x,y = pointer in NDC; z = birth time
     uOff: { value: [0,1,2,3].map(() => new THREE.Vector3()) }, uScl: { value: [1,1,1,1] }
   };
   const mat = new THREE.ShaderMaterial({
     uniforms: U, transparent: true, depthWrite: false,
     vertexShader: `
       attribute vec3 aCorner, tA, tB, tC, tD; attribute vec4 aColor; attribute vec2 aSeed;
-      uniform float uP, uTime, uSpin, uAlpha, uScl[4]; uniform vec3 uOff[4];
+      uniform float uP, uTime, uSpinAngle, uVib, uAlpha, uAspect, uTan, uCamZ, uRad, uScl[4];
+      uniform vec3 uOff[4], uM[8];
       varying vec4 vC;
+
+      /* --- 3D simplex noise (Ashima / McEwan) --- */
+      vec3 mod289(vec3 x){ return x - floor(x*(1./289.))*289.; }
+      vec4 mod289(vec4 x){ return x - floor(x*(1./289.))*289.; }
+      vec4 permute(vec4 x){ return mod289(((x*34.)+1.)*x); }
+      vec4 tis(vec4 r){ return 1.79284291400159 - .85373472095314*r; }
+      float snoise(vec3 v){
+        const vec2 C = vec2(1./6., 1./3.); const vec4 D = vec4(0., .5, 1., 2.);
+        vec3 i = floor(v + dot(v, C.yyy)); vec3 x0 = v - i + dot(i, C.xxx);
+        vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1. - g; vec3 i1 = min(g.xyz, l.zxy); vec3 i2 = max(g.xyz, l.zxy);
+        vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy;
+        i = mod289(i);
+        vec4 p = permute(permute(permute(i.z + vec4(0., i1.z, i2.z, 1.)) + i.y + vec4(0., i1.y, i2.y, 1.)) + i.x + vec4(0., i1.x, i2.x, 1.));
+        vec3 ns = .142857142857 * D.wyz - D.xzx;
+        vec4 j = p - 49. * floor(p*ns.z*ns.z); vec4 x_ = floor(j*ns.z); vec4 y_ = floor(j - 7.*x_);
+        vec4 x = x_*ns.x + ns.yyyy; vec4 y = y_*ns.x + ns.yyyy; vec4 h = 1. - abs(x) - abs(y);
+        vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);
+        vec4 s0 = floor(b0)*2. + 1.; vec4 s1 = floor(b1)*2. + 1.; vec4 sh = -step(h, vec4(0.));
+        vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+        vec3 p0 = vec3(a0.xy, h.x); vec3 p1 = vec3(a0.zw, h.y); vec3 p2 = vec3(a1.xy, h.z); vec3 p3 = vec3(a1.zw, h.w);
+        vec4 nr = tis(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+        p0 *= nr.x; p1 *= nr.y; p2 *= nr.z; p3 *= nr.w;
+        vec4 m = max(.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.); m = m*m;
+        return 42. * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+      }
+      vec3 flow(vec3 q){ return vec3(snoise(q), snoise(q + 31.4), snoise(q + 71.7)); }
+
       vec3 tgt(int i){ if(i==0) return tA*uScl[0]+uOff[0]; if(i==1) return tB*uScl[1]+uOff[1]; if(i==2) return tC*uScl[2]+uOff[2]; return tD*uScl[3]+uOff[3]; }
       vec3 off(int i){ if(i==0) return uOff[0]; if(i==1) return uOff[1]; if(i==2) return uOff[2]; return uOff[3]; }
       mat3 rotY(float a){ float c=cos(a), s=sin(a); return mat3(c,0.,-s, 0.,1.,0., s,0.,c); }
       mat3 rotX(float a){ float c=cos(a), s=sin(a); return mat3(1.,0.,0., 0.,c,s, 0.,-s,c); }
+
       void main(){
         float seed = aSeed.x; vec3 pos; float alpha = aColor.a;
-        if(aSeed.y > .5){                       // ambient glyphs: deep, slow drift, never morph
-          pos = tA + vec3(sin(uTime*.12+seed*6.28)*.6, cos(uTime*.1+seed*9.4)*.45, sin(uTime*.08+seed*3.1)*.5);
+        if(aSeed.y > .5){                               // ambient glyphs: deep, noise-driven drift, never morph
+          vec3 q = tA*.12 + uTime*.04;
+          pos = tA + flow(q) * 1.4;
         } else {
           int i = int(floor(uP)); int j = int(min(float(i)+1., 3.));
           float t = clamp(uP - floor(uP), 0., 1.); t = t*t*(3.-2.*t);
-          vec3 a = tgt(i), b = tgt(j);
           vec3 centre = mix(off(i), off(j), t);
-          pos = mix(a, b, t);
+          pos = mix(tgt(i), tgt(j), t);
+          float mist = step(.82, seed);                 // ~18% of particles form the loose halo around each shape
           // break apart mid-morph: scatter outward in 3D, then re-cluster
           vec3 dir = vec3(sin(seed*12.9), cos(seed*78.2), sin(seed*37.7));
           pos += dir * sin(t*3.14159) * (1.2 + seed*1.6);
-          // rotational depth around the shape centre (stage 4 adds continuous spin)
-          float ang = sin(uTime*.3)*.35 + uP*.45 + uSpin*uTime*.9;
+          // rotational depth around the shape centre
+          float ang = sin(uTime*.3)*.35 + uP*.45 + uSpinAngle;
           pos = centre + rotY(ang) * (pos - centre);
-          alpha *= uAlpha;
+          // continuous fluid mist: organic waving displacement, stronger mid-morph and on halo particles
+          float amp = mix(.045, .2, sin(t*3.14159)) * mix(1., 5., mist);
+          pos += flow(pos*.85 + vec3(0., 0., uTime*.25)) * amp;
+          // stage 4: dense vibration
+          if(uVib > .001) pos += flow(pos*7. + uTime*9.) * .028 * uVib;
+          // pointer impulses: repel + swirl, then elastic drift back as each impulse ages out
+          for(int k=0; k<8; k++){
+            vec3 m = uM[k]; float age = uTime - m.z;
+            float st = exp(-age*1.5) * step(0., age) * step(age, 4.);
+            vec2 mw = m.xy * vec2(uAspect, 1.) * uTan * (uCamZ - pos.z);      // pointer ray at this particle's depth
+            vec2 d = pos.xy - mw; float r = length(d);
+            float f = exp(-r*r/(uRad*uRad)) * st * (1. + .35*sin(age*9. + seed*6.28));
+            vec2 dn = d / (r + 1e-3);
+            pos.xy += dn*f*1.1 + vec2(-dn.y, dn.x)*f*.7;
+            pos.z += f*.7*(seed - .5);
+          }
+          alpha *= uAlpha * mix(1., .45, mist);
         }
         vec3 c = rotY(uTime*(.4+seed) + seed*6.28) * (rotX(uTime*(.3+seed*.6) + seed*3.) * aCorner);   // tumbling triangle
         vC = vec4(aColor.rgb, alpha);
@@ -155,6 +226,7 @@
     const dpr = Math.min(devicePixelRatio || 1, MOBILE ? 1.5 : 2);
     renderer.setPixelRatio(dpr); renderer.setSize(W, H, false);
     camera.aspect = W / H; camera.updateProjectionMatrix();
+    U.uAspect.value = camera.aspect;
     worldH = 2 * Math.tan(THREE.MathUtils.degToRad(22.5)) * camera.position.z; worldW = worldH * camera.aspect;
     tops = secs.map(s => s.getBoundingClientRect().top + scrollY);
     const mobile = W < 768, base = mobile ? worldW * .3 : Math.min(worldH * .3, worldW * .17);
@@ -188,7 +260,9 @@
     cur = REDUCE ? goal : cur + (goal - cur) * (1 - Math.pow(.001, dt));     // frame-rate independent easing
     U.uP.value = cur;
     U.uTime.value += REDUCE ? 0 : dt;
-    U.uSpin.value = REDUCE ? 0 : THREE.MathUtils.smoothstep(cur, 2.6, 3);
+    const S = THREE.MathUtils.smoothstep;
+    if (!REDUCE) U.uSpinAngle.value += dt * .9 * S(cur, 1.6, 2.0);        // pillars + exclamation block rotate; angle accumulates so it never jumps
+    U.uVib.value = REDUCE ? 0 : S(cur, 2.6, 3.0);
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }
@@ -213,6 +287,17 @@
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('touchmove', onScroll, { passive: true });     // finger-drag updates without blocking the compositor
   track();
+
+  /* ---------- 5b. Pointer + touch impulses (window-level, passive; canvas itself ignores pointer events) ---------- */
+  let slot = 0, lastPush = 0;
+  const push = (x, y) => {
+    const now = U.uTime.value; if (now - lastPush < .04) return; lastPush = now;
+    U.uM.value[slot].set((x / innerWidth) * 2 - 1, -((y / innerHeight) * 2 - 1), now); slot = (slot + 1) & 7;
+  };
+  if (!REDUCE) {
+    addEventListener('pointermove', e => push(e.clientX, e.clientY), { passive: true });
+    addEventListener('touchstart', e => { const t = e.touches[0]; if (t) push(t.clientX, t.clientY); }, { passive: true });
+  }
 
   /* ---------- 6. Portfolio roster, slot reservation, booking form ---------- */
   $$('[data-project-url]').forEach(a => {
