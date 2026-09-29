@@ -134,6 +134,7 @@
   const U = {
     uP: { value: 0 }, uTime: { value: 0 }, uSpinAngle: { value: 0 }, uVib: { value: 0 }, uAlpha: { value: 1 },
     uAspect: { value: 1 }, uTan: { value: Math.tan(THREE.MathUtils.degToRad(22.5)) }, uCamZ: { value: 7 }, uRad: { value: MOBILE ? 1.2 : 1 },
+    uOp: { value: new THREE.Vector2(.25, .40) },                      // base opacity range per pyramid (tweak here)
     uMouse: { value: new THREE.Vector2() }, uStr: { value: 0 },      // smoothed pointer (NDC) + hover strength 0..1
     uOff: { value: [0,1,2,3].map(() => new THREE.Vector3()) }, uScl: { value: [1,1,1,1] }
   };
@@ -142,8 +143,8 @@
     vertexShader: `
       attribute vec3 tA, tB, tC, tD; attribute vec4 aSeed;
       uniform float uP, uTime, uSpinAngle, uVib, uAlpha, uAspect, uTan, uCamZ, uRad, uStr, uScl[4];
-      uniform vec3 uOff[4]; uniform vec2 uMouse;
-      varying vec3 vC;
+      uniform vec3 uOff[4]; uniform vec2 uMouse, uOp;
+      varying vec3 vC; varying float vA;
 
       /* --- 3D simplex noise (Ashima / McEwan) --- */
       vec3 mod289(vec3 x){ return x - floor(x*(1./289.))*289.; }
@@ -185,8 +186,9 @@
       void main(){
         float seed = aSeed.x, amb = aSeed.y, size = aSeed.z;
         vec3 pos, col = pal(aSeed.w); float glow = 0., mag = 1.;
+        float a = mix(uOp.x, uOp.y, fract(seed*7.31));     // translucent base state: 0.25 - 0.40
         if(amb > .5){                                   // ambient pyramids: deep, dim, noise-driven drift
-          pos = tA + flow(tA*.12 + uTime*.04) * 1.4; col *= .3;
+          pos = tA + flow(tA*.12 + uTime*.04) * 1.4; col *= .3; a *= .5;      // ambient field sits even fainter
         } else {
           int i = int(floor(uP)); int j = int(min(float(i)+1., 3.));
           float t = clamp(uP - floor(uP), 0., 1.); t = t*t*(3.-2.*t);
@@ -216,14 +218,19 @@
           pos.xy += d * glow * .3; pos.z += glow * .6; mag = 1. + glow*2.2;
           col = mix(col, vec3(1.), smoothstep(.06, .55, glow)) * (1. + glow*.5);
           col *= mix(1., .55, mist) * uAlpha;
+          a *= mix(1., .6, mist);                                    // mist halo is the most see-through layer
+          a = mix(a, 1., smoothstep(.06, .55, glow));                // hover: opacity eases up to 1.0 alongside the white flash
         }
         mat3 R = rotY(uTime*(.3 + seed*.5) + seed*6.28) * rotX(uTime*(.25 + seed*.4) + seed*3.);   // each pyramid tumbles on its own axis
         vec3 n = R * normal;
         float lit = .42 + .58*max(dot(n, normalize(vec3(.4,.8,.6))), 0.);                          // flat per-face shading = visible solid depth
-        vC = col * lit;
+        vC = col * lit; vA = a;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(pos + R * (position * size * mag), 1.);
       }`,
-    fragmentShader: `varying vec3 vC; void main(){ gl_FragColor = vec4(vC, 1.); }`
+    fragmentShader: `varying vec3 vC; varying float vA; void main(){ gl_FragColor = vec4(vC, vA); }`,
+    transparent: true,
+    depthWrite: false,                     // overlapping translucent faces never clip each other
+    blending: THREE.AdditiveBlending       // order-independent, so no sorting glitches; overlaps build a soft glow
   });
   const mesh = new THREE.InstancedMesh(geo, mat, N);               // instanceMatrix stays identity; all motion is shader-driven
   mesh.frustumCulled = false;
