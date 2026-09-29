@@ -68,15 +68,17 @@
   /* ---------- 2. Scene ---------- */
   const canvas = $('[data-scrollcraft-canvas]');
   if (!canvas || !window.THREE) return;
+  /* Device detection at init: scales particle counts, pixel ratio and glyph size */
+  const MOBILE = window.innerWidth < 768;
   let renderer;
-  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' }); }
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !MOBILE, alpha: false, powerPreference: 'high-performance' }); }
   catch (e) { canvas.remove(); return; }              // no WebGL: page stays a clean black canvas
   renderer.setClearColor(0x000000, 1);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1, .1, 100);
   camera.position.z = 7;
 
-  const MAIN = matchMedia('(max-width: 820px)').matches ? 1500 : 2800, AMB = 420, N = MAIN + AMB;
+  const MAIN = MOBILE ? 700 : 2800, AMB = MOBILE ? 120 : 420, N = MAIN + AMB;
   const MAINC = [0x8052ff, 0xffb829, 0x15846e], AMBC = [0x8052ff, 0xffb829, 0x15846e, 0x3b2a8f, 0x2f4fd0, 0x5a2d91];
   const CORNER = [0,1,1,2,2,0].map(i => [Math.cos(Math.PI/2 + i*2.0944), Math.sin(Math.PI/2 + i*2.0944), 0]);
 
@@ -87,7 +89,7 @@
     const amb = p >= MAIN, seed = Math.random();
     const hex = new THREE.Color((amb ? AMBC : MAINC)[(Math.random() * (amb ? AMBC : MAINC).length) | 0]);
     const pts = amb ? (() => { const q = [(Math.random()-.5)*26, (Math.random()-.5)*16, -6 - Math.random()*10]; return [q,q,q,q]; })() : samplers.map(s => s());
-    const size = amb ? .06 + Math.random()*.08 : .03 + Math.random()*.05;
+    const size = (amb ? .06 + Math.random()*.08 : .03 + Math.random()*.05) * (MOBILE ? 1.35 : 1);   // fewer, slightly larger glyphs on phones
     for (let k = 0; k < 6; k++) {
       const v = p*6 + k;
       A.c.set(CORNER[k].map(c => c*size), v*3);
@@ -150,15 +152,17 @@
   const page = el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width/2, y: r.top + scrollY + r.height/2 }; };
   function layout() {
     W = innerWidth; H = innerHeight;
-    const dpr = Math.min(devicePixelRatio || 1, W < 820 ? 1.5 : 2);
+    const dpr = Math.min(devicePixelRatio || 1, MOBILE ? 1.5 : 2);
     renderer.setPixelRatio(dpr); renderer.setSize(W, H, false);
     camera.aspect = W / H; camera.updateProjectionMatrix();
     worldH = 2 * Math.tan(THREE.MathUtils.degToRad(22.5)) * camera.position.z; worldW = worldH * camera.aspect;
     tops = secs.map(s => s.getBoundingClientRect().top + scrollY);
-    const mobile = W < 820, base = mobile ? worldW * .3 : Math.min(worldH * .3, worldW * .17);
-    U.uAlpha.value = mobile ? .55 : 1;
+    const mobile = W < 768, base = mobile ? worldW * .3 : Math.min(worldH * .3, worldW * .17);
+    U.uAlpha.value = mobile ? .5 : 1;
     const hero = target ? page(target) : { x: W * .72, y: H * .5 };
-    const heroX = mobile ? 0 : (hero.x / W - .5) * worldW, heroY = mobile ? worldH * .12 : -(Math.min(hero.y, H*.6) / H - .5) * worldH;
+    const heroX = mobile ? 0 : (hero.x / W - .5) * worldW;
+    // stacked mobile layout: the shape sits in the target window beneath the text, clamped on-screen
+    const heroY = -(Math.min(Math.max(hero.y, H * .3), H * (mobile ? .8 : .6)) / H - .5) * worldH;
     U.uOff.value[0].set(heroX, heroY, 0);
     U.uOff.value[1].set(mobile ? 0 : worldW * .2, 0, 0);
     U.uOff.value[2].set(0, mobile ? worldH * .1 : 0, -1.5);
@@ -189,7 +193,12 @@
     requestAnimationFrame(frame);
   }
   document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) { last = performance.now(); requestAnimationFrame(frame); } });
-  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(layout, 120); });
+  /* Ignore height-only resizes under 150px (mobile address bar collapsing mid-scroll) so touch scrolling never triggers a relayout */
+  let rt, lastW = innerWidth, lastH = innerHeight;
+  addEventListener('resize', () => {
+    if (innerWidth === lastW && Math.abs(innerHeight - lastH) < 150) return;
+    lastW = innerWidth; lastH = innerHeight; clearTimeout(rt); rt = setTimeout(layout, 120);
+  }, { passive: true });
   addEventListener('load', layout);
   layout(); requestAnimationFrame(frame);
 
@@ -199,7 +208,11 @@
     const r = el.getBoundingClientRect(), d = Math.min(1, Math.abs(r.top + r.height/2 - innerHeight/2) / innerHeight);
     el.style.letterSpacing = (-.04 + .026 * d).toFixed(4) + 'em';
   });
-  addEventListener('scroll', () => requestAnimationFrame(track), { passive: true }); track();
+  let ticking = false;
+  const onScroll = () => { if (ticking) return; ticking = true; requestAnimationFrame(() => { track(); ticking = false; }); };
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('touchmove', onScroll, { passive: true });     // finger-drag updates without blocking the compositor
+  track();
 
   /* ---------- 6. Portfolio roster, slot reservation, booking form ---------- */
   $$('[data-project-url]').forEach(a => {
@@ -207,6 +220,14 @@
     a.href = url; a.target = '_blank'; a.rel = 'noopener';
     a.innerHTML = '<span class="label">' + (a.dataset.projectTitle || 'Visit live site') + '</span>';
   });
+
+  /* ---------- Mobile menu overlay ---------- */
+  const menuBtn = $('#menu-btn'), menu = $('#menu');
+  const setMenu = open => { menu.hidden = !open; menuBtn.setAttribute('aria-expanded', open); menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); document.body.classList.toggle('menu-open', open); };
+  menuBtn.addEventListener('click', () => setMenu(menu.hidden));
+  menu.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { setMenu(false); menuBtn.focus(); } });
+  addEventListener('resize', () => { if (innerWidth >= 768 && !menu.hidden) setMenu(false); }, { passive: true });
 
   const form = $('#book'), msg = $('#form-msg'), mail = $('#mail-link');
   const bookingText = f => `Hi Sergio, I'd like to book a vessel.\nName: ${f.name.value}\nBusiness: ${f.biz.value}\nPhone: ${f.phone.value}\nPackage: ${f.pkg.value}\nProject: ${f.spec.value}`;

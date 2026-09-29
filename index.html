@@ -8,109 +8,126 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.11"></script>
+<style type="text/tailwindcss">
+@theme {
+  --color-void:#000000;--color-bone-white:#ffffff;--color-ash-gray:#9a9a9a;--color-silver-mist:#bdbdbd;
+  --color-electric-iris:#8052ff;--color-saffron-spark:#ffb829;--color-deep-verdant:#15846e;
+  --font-ppneuemontreal:'PPNeueMontreal','Inter',ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --radius-3xl:24px;--radius-full:9999px;
+}
+</style>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="bg-void text-bone-white font-ppneuemontreal font-extralight">
 <canvas id="scrollcraft" data-scrollcraft-canvas aria-hidden="true"></canvas>
 
-<header class="nav">
-  <a href="#hero" class="brand">
+<header class="nav fixed inset-x-0 top-0 z-30 flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4">
+  <a href="#hero" class="flex items-center gap-3 text-xl sm:text-2xl font-normal tracking-[-0.02em]">
     <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8052ff"/><stop offset="1" stop-color="#15846e"/></linearGradient></defs><path d="M3 22 13 3l10 19z" fill="none" stroke="url(#lg)" stroke-width="2.4"/></svg>
     Portside Digital
   </a>
-  <nav class="links label" aria-label="Primary"><a href="#work">Work</a><a href="#pricing">Pricing</a><a href="#process">Process</a></nav>
-  <a href="#book" class="pill">Book Vessel</a>
+  <nav class="hidden md:flex gap-9 label" aria-label="Primary"><a class="navlink" href="#work">Work</a><a class="navlink" href="#pricing">Pricing</a><a class="navlink" href="#process">Process</a></nav>
+  <div class="flex items-center gap-3">
+    <a href="#book" class="pill hidden sm:inline-block">Book Vessel</a>
+    <button type="button" id="menu-btn" class="burger md:hidden" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+  </div>
 </header>
 
-<main>
-  <!-- SECTION 1 · data-scrollcraft-shape="0" → 3D desktop workstation -->
-  <section id="hero" class="sec hero" data-scrollcraft-section data-scrollcraft-shape="0">
-    <div class="wrap hero-grid">
-      <div>
-        <p class="label saffron coords">10.6596° N, 61.5019° W — PORT OF SPAIN, TRINIDAD</p>
-        <h1 class="display" data-track>We build websites that get small businesses found.</h1>
-        <p class="lead">Portside Digital is a fast, mobile-ready web studio for Trinidad &amp; Tobago small businesses. Every build is directed by Sergio Timothy, a computing graduate who designs and ships each site personally.</p>
+<!-- Mobile overlay (pure black, no panel edges) -->
+<div id="menu" class="menu md:hidden" hidden>
+  <nav class="flex flex-col items-start space-y-8 px-4 sm:px-8" aria-label="Mobile">
+    <a href="#work" class="text-[42px] leading-[1.2] tracking-[-0.04em] font-normal">Work</a>
+    <a href="#pricing" class="text-[42px] leading-[1.2] tracking-[-0.04em] font-normal">Pricing</a>
+    <a href="#process" class="text-[42px] leading-[1.2] tracking-[-0.04em] font-normal">Process</a>
+    <a href="#book" class="pill">Book Vessel</a>
+  </nav>
+</div>
+
+<main class="relative z-10">
+  <!-- SECTION 1 · shape 0 → 3D desktop workstation -->
+  <section id="hero" class="sec flex items-center px-4 sm:px-8 lg:px-12 pt-28 lg:pt-36 pb-16" data-scrollcraft-section data-scrollcraft-shape="0">
+    <div class="mx-auto w-full max-w-[1280px] grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-10 lg:gap-16">
+      <div class="space-y-8">
+        <p class="label text-saffron-spark">10.6596° N, 61.5019° W — PORT OF SPAIN, TRINIDAD</p>
+        <h1 class="text-[38px] leading-[1.15] sm:text-[64px] lg:text-[113px] lg:leading-[1.1] tracking-[-0.04em] font-normal" data-track>We build websites that get small businesses found.</h1>
+        <p class="max-w-[540px] text-[18px] leading-[1.5] text-silver-mist">Portside Digital is a fast, mobile-ready web studio for Trinidad &amp; Tobago small businesses. Every build is directed by Sergio Timothy, a computing graduate who designs and ships each site personally.</p>
         <a href="#book" class="pill">Start a Project</a>
       </div>
-      <!-- 3D viewport window: the workstation forms around the centre of this element -->
-      <div class="viewport" data-scrollcraft-3d-target aria-hidden="true"></div>
+      <!-- 3D viewport window: the workstation forms around the centre of this element. Stacks beneath the text on mobile. -->
+      <div class="h-[280px] sm:h-[360px] lg:h-[460px]" data-scrollcraft-3d-target aria-hidden="true"></div>
     </div>
   </section>
 
   <!-- SECTION 2 · shape 1 → 3D cargo vessel -->
-  <section id="work" class="sec" data-scrollcraft-section data-scrollcraft-shape="1">
-    <div class="wrap">
-      <h2 class="h-lg" data-track>Every project we've shipped, logged like cargo.</h2>
-      <div class="manifest">
+  <section id="work" class="sec px-4 sm:px-8 lg:px-12 py-24 lg:py-32" data-scrollcraft-section data-scrollcraft-shape="1">
+    <div class="mx-auto max-w-[1280px]">
+      <h2 class="text-[40px] leading-[1.1] sm:text-[56px] lg:text-[78px] tracking-[-0.04em] font-normal max-w-[900px]" data-track>Every project we've shipped, logged like cargo.</h2>
+      <div class="mt-16 lg:mt-24 grid grid-cols-1 md:grid-cols-2 gap-x-9 gap-y-14">
         <figure>
           <a class="media aura" href="https://werty573.github.io/demo/" target="_blank" rel="noopener" aria-label="Open Aura Atelier live site">
             <svg viewBox="0 0 200 60" aria-hidden="true"><path d="M6 54 30 6l24 48zM70 54 94 6l24 48z" fill="none" stroke="#ffb829" stroke-width="1.5"/><path d="M134 54 158 6l24 48z" fill="none" stroke="#8052ff" stroke-width="1.5"/></svg>
-            <span class="visit label">Visit live site</span>
+            <span class="label">Visit live site</span>
           </a>
-          <figcaption><p class="label iris">PD-001</p><h3 class="h-xs">Aura Atelier</h3><p class="caption">Handmade luxury hair art · <a class="saffron" href="https://werty573.github.io/demo/" target="_blank" rel="noopener">werty573.github.io/demo</a></p></figcaption>
+          <figcaption class="mt-4"><p class="label text-electric-iris">PD-001</p><h3 class="text-[27px] leading-none font-normal mt-2">Aura Atelier</h3><p class="caption mt-2">Handmade luxury hair art · <a class="text-saffron-spark underline underline-offset-4" href="https://werty573.github.io/demo/" target="_blank" rel="noopener">View live system</a></p></figcaption>
         </figure>
         <figure>
           <div class="media slot">
             <span class="dot" aria-hidden="true"></span>
-            <p class="h-sm ash" id="slot-title">Slot open</p>
-            <button type="button" class="ghost" id="reserve-slot" aria-pressed="false">Reserve this berth</button>
+            <p class="text-[28px] sm:text-[36px] leading-[1.2] tracking-[-0.04em] text-ash-gray font-normal" id="slot-title">Slot open</p>
+            <button type="button" class="ghost" id="reserve-slot">Reserve this berth</button>
           </div>
-          <figcaption><p class="label iris">PD-002</p><h3 class="h-xs">Next build — in the yard</h3><p class="caption">Interactive slot for upcoming clients</p></figcaption>
-        </figure>
-        <!-- Roster slots: set data-project-url="https://…" and script.js turns the slot into a live link -->
-        <figure>
-          <a class="media empty" href="#book" data-project-url="" data-project-title=""><span class="caption">Roster slot · add live URL via data-project-url</span></a>
-          <figcaption><p class="label iris">PD-003</p><h3 class="h-xs">Awaiting cargo</h3></figcaption>
-        </figure>
-        <figure>
-          <a class="media empty" href="#book" data-project-url="" data-project-title=""><span class="caption">Roster slot · add live URL via data-project-url</span></a>
-          <figcaption><p class="label iris">PD-004</p><h3 class="h-xs">Awaiting cargo</h3></figcaption>
+          <figcaption class="mt-4"><p class="label text-electric-iris">PD-002</p><h3 class="text-[27px] leading-none font-normal mt-2">Next build — in the yard</h3><p class="caption mt-2">Interactive slot for upcoming clients</p></figcaption>
         </figure>
       </div>
     </div>
   </section>
 
   <!-- SECTION 3 · shape 2 → 3D coordinate pillars -->
-  <section id="pricing" class="sec" data-scrollcraft-section data-scrollcraft-shape="2">
-    <div class="wrap">
-      <h2 class="h-lg" data-track>Priced for where your business is now.</h2>
-      <p class="lead">All prices are in Trinidad &amp; Tobago dollars.</p>
-      <div class="tiers">
-        <article><p class="label saffron">Starter Tier</p><h3 class="h-sm">The Dock</h3><p class="price">$800 – $1,500 TTD</p><ul><li>Up to 5 pages</li><li>Mobile responsive</li><li>7-day turnaround</li></ul></article>
-        <article><p class="label saffron">Standard Tier</p><h3 class="h-sm">The Passage</h3><p class="price">$2,500 – $3,500 TTD</p><ul><li>Custom design</li><li>Basic SEO</li><li>WhatsApp &amp; booking yard integrations</li></ul></article>
-        <article><p class="label saffron">Growth Tier</p><h3 class="h-sm">The Voyage</h3><p class="price">$4,000+ TTD</p><ul><li>Full custom build architecture</li><li>E-commerce ordering loops</li><li>Advanced SEO indexing</li></ul></article>
+  <section id="pricing" class="sec px-4 sm:px-8 lg:px-12 py-24 lg:py-32" data-scrollcraft-section data-scrollcraft-shape="2">
+    <div class="mx-auto max-w-[1280px]">
+      <h2 class="text-[40px] leading-[1.1] sm:text-[56px] lg:text-[78px] tracking-[-0.04em] font-normal max-w-[900px]" data-track>Priced for where your business is now.</h2>
+      <p class="mt-8 text-silver-mist">All prices are in Trinidad &amp; Tobago dollars.</p>
+      <div class="mt-16 lg:mt-24 grid grid-cols-1 lg:grid-cols-3 gap-14 lg:gap-16">
+        <article class="space-y-4"><p class="label text-saffron-spark">Starter Tier</p><h3 class="text-[32px] lg:text-[42px] leading-[1.2] tracking-[-0.04em] font-normal">The Dock</h3><p class="text-[27px] leading-none font-normal">$800 – $1,500 TTD</p><ul class="text-silver-mist space-y-1.5"><li>Up to 5 pages</li><li>Mobile responsive</li><li>7-day turnaround</li></ul></article>
+        <article class="space-y-4"><p class="label text-saffron-spark">Standard Tier</p><h3 class="text-[32px] lg:text-[42px] leading-[1.2] tracking-[-0.04em] font-normal">The Passage</h3><p class="text-[27px] leading-none font-normal">$2,500 – $3,500 TTD</p><ul class="text-silver-mist space-y-1.5"><li>Custom design</li><li>Basic SEO</li><li>WhatsApp &amp; booking yard integrations</li></ul></article>
+        <article class="space-y-4"><p class="label text-saffron-spark">Growth Tier</p><h3 class="text-[32px] lg:text-[42px] leading-[1.2] tracking-[-0.04em] font-normal">The Voyage</h3><p class="text-[27px] leading-none font-normal">$4,000+ TTD</p><ul class="text-silver-mist space-y-1.5"><li>Full custom build architecture</li><li>E-commerce ordering loops</li><li>Advanced SEO indexing</li></ul></article>
       </div>
     </div>
   </section>
 
   <!-- SECTION 4 · shape 3 → rotating 3D exclamation anchor beside the form -->
-  <section id="process" class="sec last" data-scrollcraft-section data-scrollcraft-shape="3">
-    <div class="wrap book-grid">
-      <div>
-        <h2 class="h-lg" data-track>From first call to launch.</h2>
-        <ol class="steps">
-          <li><span class="label saffron">01</span><span class="h-sm">Chart the Course</span></li>
-          <li><span class="label saffron">02</span><span class="h-sm">Build the Vessel</span></li>
-          <li><span class="label saffron">03</span><span class="h-sm">Load the Cargo</span></li>
-          <li><span class="label saffron">04</span><span class="h-sm">Launch</span></li>
+  <section id="process" class="sec px-4 sm:px-8 lg:px-12 pt-24 lg:pt-32 pb-12" data-scrollcraft-section data-scrollcraft-shape="3">
+    <div class="mx-auto max-w-[1280px] grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-48">
+      <div class="space-y-8">
+        <h2 class="text-[40px] leading-[1.1] sm:text-[56px] lg:text-[78px] tracking-[-0.04em] font-normal" data-track>From first call to launch.</h2>
+        <ol class="space-y-6 lg:space-y-8 pt-4">
+          <li class="flex items-baseline gap-6"><span class="label text-saffron-spark w-8">01</span><span class="text-[28px] sm:text-[36px] lg:text-[42px] leading-[1.2] tracking-[-0.04em] font-normal">Chart the Course</span></li>
+          <li class="flex items-baseline gap-6"><span class="label text-saffron-spark w-8">02</span><span class="text-[28px] sm:text-[36px] lg:text-[42px] leading-[1.2] tracking-[-0.04em] font-normal">Build the Vessel</span></li>
+          <li class="flex items-baseline gap-6"><span class="label text-saffron-spark w-8">03</span><span class="text-[28px] sm:text-[36px] lg:text-[42px] leading-[1.2] tracking-[-0.04em] font-normal">Load the Cargo</span></li>
+          <li class="flex items-baseline gap-6"><span class="label text-saffron-spark w-8">04</span><span class="text-[28px] sm:text-[36px] lg:text-[42px] leading-[1.2] tracking-[-0.04em] font-normal">Launch</span></li>
         </ol>
       </div>
-      <form id="book" novalidate>
-        <h2 class="h-sm" data-track>Sergio's Booking Yard</h2>
-        <div class="field"><label for="f-name">Your Name</label><input id="f-name" name="name" type="text" autocomplete="name" placeholder="e.g. Amara Joseph" required></div>
-        <div class="field"><label for="f-biz">Business Name</label><input id="f-biz" name="biz" type="text" autocomplete="organization" placeholder="e.g. Aura Atelier"></div>
-        <div class="field"><label for="f-phone">Phone / WhatsApp</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="(868) 000-0000" required></div>
-        <div class="field"><label for="f-pkg">Package Selection</label>
-          <select id="f-pkg" name="pkg"><option>The Dock — $800 – $1,500 TTD</option><option>The Passage — $2,500 – $3,500 TTD</option><option>The Voyage — $4,000+ TTD</option><option>Not sure yet</option></select></div>
-        <div class="field"><label for="f-spec">Project Specifications</label><textarea id="f-spec" name="spec" rows="3" placeholder="What does your business do, and what should the site do for it?"></textarea></div>
-        <p id="form-msg" class="caption" role="status"></p>
-        <div class="actions"><button class="pill" type="submit">Send via WhatsApp</button><a class="ghost" id="mail-link" href="mailto:sztimothy2036@gmail.com">Email instead</a></div>
+      <form id="book" class="space-y-8" novalidate>
+        <h2 class="text-[32px] sm:text-[42px] leading-[1.2] tracking-[-0.04em] font-normal" data-track>Sergio's Booking Yard</h2>
+        <div><label for="f-name" class="block text-bone-white font-normal text-base mb-1">Your Name</label>
+          <input id="f-name" name="name" type="text" autocomplete="name" placeholder="e.g. Amara Joseph" required class="w-full min-h-12 bg-transparent border-0 border-b border-ash-gray/30 rounded-none text-bone-white placeholder:text-ash-gray focus:outline-none focus:border-electric-iris"></div>
+        <div><label for="f-biz" class="block text-bone-white font-normal text-base mb-1">Business Name</label>
+          <input id="f-biz" name="biz" type="text" autocomplete="organization" placeholder="e.g. Aura Atelier" class="w-full min-h-12 bg-transparent border-0 border-b border-ash-gray/30 rounded-none text-bone-white placeholder:text-ash-gray focus:outline-none focus:border-electric-iris"></div>
+        <div><label for="f-phone" class="block text-bone-white font-normal text-base mb-1">Phone / WhatsApp</label>
+          <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(868) 000-0000" required class="w-full min-h-12 bg-transparent border-0 border-b border-ash-gray/30 rounded-none text-bone-white placeholder:text-ash-gray focus:outline-none focus:border-electric-iris"></div>
+        <div><label for="f-pkg" class="block text-bone-white font-normal text-base mb-1">Package Selection</label>
+          <select id="f-pkg" name="pkg" class="w-full min-h-12 bg-transparent border-0 border-b border-ash-gray/30 rounded-none text-bone-white focus:outline-none focus:border-electric-iris"><option>The Dock — $800 – $1,500 TTD</option><option>The Passage — $2,500 – $3,500 TTD</option><option>The Voyage — $4,000+ TTD</option><option>Not sure yet</option></select></div>
+        <div><label for="f-spec" class="block text-bone-white font-normal text-base mb-1">Project Specifications</label>
+          <textarea id="f-spec" name="spec" rows="3" placeholder="What does your business do, and what should the site do for it?" class="w-full min-h-12 bg-transparent border-0 border-b border-ash-gray/30 rounded-none text-bone-white placeholder:text-ash-gray focus:outline-none focus:border-electric-iris"></textarea></div>
+        <p id="form-msg" class="caption min-h-[18px]" role="status"></p>
+        <div class="flex flex-wrap items-center gap-x-8 gap-y-4"><button class="pill" type="submit">Send via WhatsApp</button><a class="ghost" id="mail-link" href="mailto:sztimothy2036@gmail.com">Email instead</a></div>
       </form>
     </div>
-    <footer class="wrap foot label">
-      <a href="https://wa.me/18683195929" target="_blank" rel="noopener">WhatsApp Link — (868) 319-5929</a>
-      <a href="mailto:sztimothy2036@gmail.com">Email Contact — sztimothy2036@gmail.com</a>
-      <span>Portfolio Lead — Sergio Timothy</span>
+    <footer class="mx-auto max-w-[1280px] mt-24 lg:mt-32 flex flex-col sm:flex-row sm:flex-wrap gap-x-16 gap-y-4 label text-ash-gray">
+      <a class="hover:text-bone-white py-2" href="https://wa.me/18683195929" target="_blank" rel="noopener">WhatsApp Link — (868) 319-5929</a>
+      <a class="hover:text-bone-white py-2" href="mailto:sztimothy2036@gmail.com">Email Contact — sztimothy2036@gmail.com</a>
+      <span class="py-2">Portfolio Lead — Sergio Timothy</span>
     </footer>
   </section>
 </main>
