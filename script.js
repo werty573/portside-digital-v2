@@ -1,12 +1,12 @@
-/* Portside Digital — ScrollCraft 3D
+/* Portside Digital — ScrollCraft 3D (solid pyramid edition)
  * Hooks:
  *   [data-scrollcraft-canvas]        fixed WebGL canvas behind the page
  *   [data-scrollcraft-3d-target]     hero window; the workstation forms around its centre
  *   [data-scrollcraft-section]       sections that drive morph progress (data-scrollcraft-shape = 0..3)
  *   [data-track]                     headlines whose letter-spacing tightens as they reach screen centre
  *   [data-project-url]               roster slots; a non-empty URL turns the slot into a live link
- * All morphing, simplex-noise mist and mouse repulsion run in the vertex shader (one draw call); JS only updates a few uniforms per frame.
- * Mouse/touch: [pointermove] + [touchstart] feed an 8-slot ring of impulses (uM); each impulse pushes and swirls nearby particles, then decays so they drift back.
+ * One THREE.InstancedMesh of closed 4-sided pyramids (ConeGeometry, 4 radial segments, flat-shaded faces).
+ * Per-instance morph targets, simplex-noise mist, magnetic hover and colour shifts all run in the vertex shader.
  */
 (() => {
   'use strict';
@@ -14,134 +14,136 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
-  /* ---------- 1. Shape data: true 3D edge lists (x, y, z) ---------- */
+  /* ---------- 1. Volumetric target shapes: edges (lines of pyramids) + quads (surface fills) ---------- */
   const box = (cx, cy, cz, w, h, d) => {
-    const x = w / 2, y = h / 2, z = d / 2;
+    const x = w/2, y = h/2, z = d/2;
     const v = [[-x,-y,-z],[x,-y,-z],[x,y,-z],[-x,y,-z],[-x,-y,z],[x,-y,z],[x,y,z],[-x,y,z]].map(p => [p[0]+cx, p[1]+cy, p[2]+cz]);
     return [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]].map(e => [v[e[0]], v[e[1]]]);
   };
-  const prism = (prof, z0, z1) => {           // extrude an x/y profile between two z depths
-    const out = [];
-    prof.forEach((p, i) => {
-      const q = prof[(i + 1) % prof.length];
-      out.push([[p[0],p[1],z0],[q[0],q[1],z0]], [[p[0],p[1],z1],[q[0],q[1],z1]], [[p[0],p[1],z0],[p[0],p[1],z1]]);
-    });
-    return out;
+  const shape = k => ({ e: [], q: [], k });                       // k = pyramids per unit of surface area (relative to edge length)
+  const addBox = (s, ...a) => s.e.push(...box(...a));
+  const addSolid = (s, cx, cy, cz, w, h, d) => {                  // wireframe box + six filled faces
+    addBox(s, cx, cy, cz, w, h, d); const x = w/2, y = h/2, z = d/2;
+    s.q.push([[cx,cy,cz+z],[x,0,0],[0,y,0]], [[cx,cy,cz-z],[x,0,0],[0,y,0]], [[cx+x,cy,cz],[0,y,0],[0,0,z]],
+             [[cx-x,cy,cz],[0,y,0],[0,0,z]], [[cx,cy+y,cz],[x,0,0],[0,0,z]], [[cx,cy-y,cz],[x,0,0],[0,0,z]]);
   };
+  const line = (s, a, b) => s.e.push([a, b]);
 
-  const SHAPES = [
-    /* 0 · desktop workstation: bezel layers, on-screen windows, rear hump, neck, base, desk + legs, keycap grid, mouse, tower with drive bays, speakers, mug */
-    (() => {
-      const e = [].concat(
-        box(0,.5,0,2.0,1.2,.08), box(0,.5,.05,1.84,1.04,.02), box(0,.5,.07,1.7,.92,.005), box(0,-.05,.06,.14,.03,.01),
-        box(-.35,.62,.08,.7,.5,.005), box(.5,.5,.08,.55,.36,.005), box(-.35,.2,.08,.7,.14,.005),
-        box(0,.5,-.12,.9,.6,.16), box(0,-.2,-.08,.16,.55,.08), box(0,-.5,-.02,.8,.04,.45),
-        box(0,-.56,.2,3.4,.03,1.5), box(-1.6,-.9,-.4,.06,.7,.06), box(1.6,-.9,-.4,.06,.7,.06), box(-1.6,-.9,.8,.06,.7,.06), box(1.6,-.9,.8,.06,.7,.06),
-        box(0,-.5,.68,1.4,.05,.44), box(1.05,-.5,.68,.15,.05,.24),
-        box(-1.55,-.1,-.1,.4,1.3,.6), box(-1.55,.35,.21,.3,.06,.02), box(-1.55,.2,.21,.3,.06,.02), box(-1.55,-.35,.21,.06,.06,.02),
-        box(-1.15,-.3,-.15,.22,.5,.24), box(1.15,-.3,-.15,.22,.5,.24), box(1.6,-.4,.15,.2,.3,.2), box(1.74,-.4,.15,.08,.16,.02));
-      for (let r = 0; r < 4; r++) for (let c = 0; c < 12; c++) e.push(...box(-.6 + c*.109, -.46, .55 + r*.1, .09, .02, .08));
-      return e;
-    })(),
-    /* 1 · cargo vessel: hull ribs + keel + tapering bow (volumetric), deck, container stacks, bridge, funnel, mast, wake */
-    (() => {
-      const e = [], hw = x => .45 * Math.min(1, Math.max(0, (1.6 - x) / .55));       // half-beam tapers toward the bow
-      const ring = x => { const w = hw(x), k = w * .65; return [[x,.1,-w],[x,.1,w],[x,-.35,k],[x,-.35,-k]]; };
-      const xs = []; for (let x = -1.3; x <= 1.58; x += .12) xs.push(x);
-      xs.forEach((x, i) => {
-        const r = ring(x); r.forEach((p, k) => e.push([p, r[(k+1)%4]]));
-        if (i) { const q = ring(xs[i-1]); r.forEach((p, k) => e.push([q[k], p])); }
-      });
-      for (let x = -1.2; x <= 1.2; x += .3) e.push([[x,.1,-hw(x)],[x,.1,hw(x)]]);
-      for (let i = 0; i < 6; i++) for (let l = 0; l < 3; l++) for (const z of [-.24, 0, .24]) e.push(...box(-1.1 + i*.34, .2 + l*.2, z, .3, .18, .21));
-      e.push(...box(1.0,.42,0,.44,.64,.7), ...box(1.0,.8,0,.5,.06,.76), ...box(.92,1.0,0,.18,.32,.18), ...box(1.05,1.3,0,.03,.5,.03), ...box(1.05,1.5,0,.24,.02,.02), ...box(1.35,.16,0,.14,.06,.3));
-      for (let z = -.9; z <= .9; z += .3) for (let x = -1.7; x < 1.7; x += .34) e.push([[x,-.45,z],[x+.17,-.38,z]], [[x+.17,-.38,z],[x+.34,-.45,z]]);
-      return e;
-    })(),
-    /* 2 · coordinate pillars with caps on a floor axis grid + axis arrows */
-    (() => {
-      const e = [];
-      for (let i = 0; i < 7; i++) { const h = 1 + (i % 4) * .5 + i * .12, x = -2.4 + i*.8, z = ((i % 2) * 2 - 1) * .5;
-        e.push(...box(x, -1 + h/2, z, .22, h, .22), ...box(x, -1 + h + .03, z, .34, .05, .34), ...box(x, -1 + h/2, z, .1, h, .1)); }
-      for (let z = -.9; z <= .9; z += .3) e.push([[-2.8,-1,z],[2.8,-1,z]]);
-      for (let x = -2.8; x <= 2.8; x += .4) e.push([[x,-1,-.9],[x,-1,.9]]);
-      e.push([[-2.8,-1,-.9],[-2.8,1.6,-.9]], [[2.8,-1,-.9],[2.8,1.6,-.9]]);
-      return e;
-    })(),
-    /* 3 · exclamation block: stacked tapering slabs + double-walled cube dot (vibrates in the shader) */
-    (() => {
-      const e = [];
-      for (let i = 0; i < 8; i++) e.push(...box(0, 1.15 - i*.2, 0, .6 - .04*i, .2, .46 - .03*i));
-      e.push(...box(0,-.75,0,.5,.5,.4), ...box(0,-.75,0,.34,.34,.26));
-      return e;
-    })()
-  ];
+  /* 0 · desktop workstation: ultra-wide curved monitor, stand, desk, keyboard, mouse, tower, speakers, mug */
+  const SH0 = (() => {
+    const s = shape(5), R = 3.2, cy = .55, n = 18;
+    const P = (hw, i) => { const th = Math.asin(hw / R), a = -th + 2*th*i/n; return [R*Math.sin(a), R*(1 - Math.cos(a)) - .15]; };
+    const arc = (hw, hh, fill) => { for (let i = 0; i < n; i++) { const a = P(hw, i), b = P(hw, i+1);
+      line(s, [a[0],cy+hh,a[1]], [b[0],cy+hh,b[1]]); line(s, [a[0],cy-hh,a[1]], [b[0],cy-hh,b[1]]);
+      if (fill) s.q.push([[(a[0]+b[0])/2, cy, (a[1]+b[1])/2], [(b[0]-a[0])/2, 0, (b[1]-a[1])/2], [0, hh, 0]]); }
+      [0, n].forEach(i => { const a = P(hw, i); line(s, [a[0],cy-hh,a[1]], [a[0],cy+hh,a[1]]); }); };
+    arc(1.6, .62, false); arc(1.52, .54, true);                                   // bezel + glowing screen panel
+    for (const yy of [.3, .5, .7]) for (let i = 2; i < 9; i++) { const a = P(1.4, i), b = P(1.4, i+1); line(s, [a[0],yy,a[1]], [b[0],yy,b[1]]); }   // UI rows
+    addBox(s, 0,.55,-.35,1.3,.7,.3); addBox(s, 0,-.2,-.3,.16,.55,.08); addBox(s, 0,-.5,-.15,.9,.04,.5);   // rear hump, neck, base
+    addBox(s, 0,-.56,.2,3.4,.03,1.5); [[-1.6,-.4],[1.6,-.4],[-1.6,.8],[1.6,.8]].forEach(p => addBox(s, p[0],-.9,p[1],.06,.7,.06));   // desk
+    addBox(s, 0,-.5,.68,1.4,.05,.44); addBox(s, 1.05,-.5,.68,.15,.05,.24);       // keyboard base + mouse
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 12; c++) addBox(s, -.6 + c*.109, -.46, .55 + r*.1, .09, .02, .08);
+    addBox(s, -1.65,-.1,-.1,.4,1.3,.6); addBox(s, -1.65,.35,.21,.3,.06,.02); addBox(s, -1.65,.2,.21,.3,.06,.02);   // tower + drive bays
+    addBox(s, -1.2,-.3,-.15,.22,.5,.24); addBox(s, 1.2,-.3,-.15,.22,.5,.24); addBox(s, 1.6,-.4,.15,.2,.3,.2);   // speakers + mug
+    return s;
+  })();
 
-  const edgeSampler = edges => {
-    const cum = []; let tot = 0;
-    edges.forEach(e => { tot += Math.hypot(e[1][0]-e[0][0], e[1][1]-e[0][1], e[1][2]-e[0][2]); cum.push(tot); });
+  /* 1 · cargo-vessel blueprint: ribbed tapering hull + waterlines, container stacks, layered bridge, masts + rigging, antennas */
+  const SH1 = (() => {
+    const s = shape(0), hw = x => .45 * Math.min(1, Math.max(0, (1.6 - x) / .55));
+    const ring = (x, y0, y1) => { const w = hw(x), k = w*.65; return [[x,y1,-w],[x,y1,w],[x,y0,k],[x,y0,-k]]; };
+    const xs = []; for (let x = -1.35; x <= 1.58; x += .1) xs.push(x);
+    xs.forEach((x, i) => { const r = ring(x, -.35, .1); r.forEach((p, k) => line(s, p, r[(k+1)%4]));
+      if (i) { const q = ring(xs[i-1], -.35, .1); r.forEach((p, k) => line(s, q[k], p)); } });
+    for (let lv = 0; lv <= 4; lv++) { const y = .1 - lv*.09, f = 1 - lv*.09;                    // longitudinal waterlines give the grid look
+      for (const sd of [-1, 1]) for (let i = 1; i < xs.length; i++) line(s, [xs[i-1], y, sd*hw(xs[i-1])*f], [xs[i], y, sd*hw(xs[i])*f]); }
+    for (let i = 0; i < 6; i++) for (let l = 0; l < 3; l++) for (const z of [-.26, -.09, .09, .26]) addBox(s, -1.1 + i*.34, .2 + l*.19, z, .3, .17, .16);   // container stacks
+    for (let l = 0; l < 4; l++) addBox(s, 1.0, .22 + l*.17, 0, .46 - l*.02, .15, .72 - l*.03);                  // bridge deck layers
+    addBox(s, 1.0,.95,0,.52,.05,.78); addBox(s, .9,1.15,0,.16,.32,.16); addBox(s, 1.1,1.15,0,.12,.28,.12);       // wings + funnels
+    line(s, [1.0,1.3,0], [1.0,1.75,0]); line(s, [.9,1.3,0], [.9,1.55,0]); line(s, [.85,1.55,0], [.95,1.55,0]);      // antennas
+    for (const mx of [-.5, .3]) {                                                                                    // masts + rigging lines
+      line(s, [mx,.1,0], [mx,1.3,0]); line(s, [mx,1.05,-.22], [mx,1.05,.22]); line(s, [mx,1.3,-.1], [mx,1.3,.1]);
+      for (const z of [-.05, 0, .05]) { line(s, [mx,1.3,z], [-1.4,.12,z*4]); line(s, [mx,1.3,z], [mx>0?1.45:.9,.12,z*4]); }
+      for (const z of [-.42, .42]) line(s, [mx,1.3,0], [mx,.1,z]);
+    }
+    for (let x = -1.3; x < 1.5; x += .1) { line(s, [x,.16,-hw(x)], [x,.16,-hw(x)]); }   // rail posts
+    return s;
+  })();
+
+  /* 2 · undulating topological grid mesh (data-ocean floor) stretching away into depth; the shader adds live waves */
+  const SH2 = (() => {
+    const s = shape(0), X0 = -3.4, X1 = 3.4, Z0 = -5.5, Z1 = 1.2;
+    const Y = (x, z) => -1 + .28*Math.sin(x*1.1 + z*.6)*Math.cos(z*.8) + .12*Math.sin(x*2.3 - z*1.5);
+    for (let x = X0; x <= X1 + .01; x += .28) for (let z = Z0; z < Z1; z += .15) line(s, [x, Y(x,z), z], [x, Y(x,z+.15), z+.15]);
+    for (let z = Z0; z <= Z1 + .01; z += .3) for (let x = X0; x < X1; x += .15) line(s, [x, Y(x,z), z], [x+.15, Y(x+.15,z), z]);
+    return s;
+  })();
+
+  /* 3 · volumetric exclamation matrix: stacked tapering solid slabs + double cube dot (vibrates in the shader) */
+  const SH3 = (() => {
+    const s = shape(9);
+    for (let i = 0; i < 8; i++) addSolid(s, 0, 1.15 - i*.2, 0, .6 - .04*i, .2, .46 - .03*i);
+    addSolid(s, 0,-.75,0,.5,.5,.4); addBox(s, 0,-.75,0,.3,.3,.24);
+    return s;
+  })();
+  const SHAPES = [SH0, SH1, SH2, SH3];
+
+  const sampler = s => {                                            // random point on edges (by length) and quads (by area * density)
+    const items = []; let tot = 0;
+    s.e.forEach(e => { tot += Math.hypot(e[1][0]-e[0][0], e[1][1]-e[0][1], e[1][2]-e[0][2]) || .001; items.push([tot, 0, e]); });
+    s.q.forEach(q => { const u = q[1], v = q[2], cx = u[1]*v[2]-u[2]*v[1], cy = u[2]*v[0]-u[0]*v[2], cz = u[0]*v[1]-u[1]*v[0];
+      tot += 4*Math.hypot(cx, cy, cz) * s.k; items.push([tot, 1, q]); });
     return () => {
-      const r = Math.random() * tot; let lo = 0, hi = cum.length - 1;
-      while (lo < hi) { const m = (lo + hi) >> 1; cum[m] < r ? lo = m + 1 : hi = m; }
-      const e = edges[lo], t = Math.random(), j = .02;
-      return [0,1,2].map(k => e[0][k] + (e[1][k]-e[0][k]) * t + (Math.random()-.5) * j);
+      const r = Math.random() * tot; let lo = 0, hi = items.length - 1;
+      while (lo < hi) { const m = (lo + hi) >> 1; items[m][0] < r ? lo = m + 1 : hi = m; }
+      const it = items[lo], g = it[2], j = .012; let p;
+      if (it[1] === 0) { const t = Math.random(); p = [0,1,2].map(k => g[0][k] + (g[1][k]-g[0][k]) * t); }
+      else { const a = Math.random()*2-1, b = Math.random()*2-1; p = [0,1,2].map(k => g[0][k] + g[1][k]*a + g[2][k]*b); }
+      return p.map(c => c + (Math.random()-.5) * j);
     };
   };
 
-  /* ---------- 2. Scene ---------- */
+  /* ---------- 2. Scene: one InstancedMesh of solid pyramids ---------- */
   const canvas = $('[data-scrollcraft-canvas]');
   if (!canvas || !window.THREE) return;
-  /* Device detection at init: scales particle counts, pixel ratio and glyph size */
-  const MOBILE = window.innerWidth < 768;
+  const MOBILE = window.innerWidth < 768;                          // device tier chosen at init
   let renderer;
   try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !MOBILE, alpha: false, powerPreference: 'high-performance' }); }
-  catch (e) { canvas.remove(); return; }              // no WebGL: page stays a clean black canvas
+  catch (e) { canvas.remove(); return; }                           // no WebGL: page stays a clean black canvas
   renderer.setClearColor(0x000000, 1);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1, .1, 100);
   camera.position.z = 7;
 
   const MAIN = MOBILE ? 1500 : 8000, AMB = MOBILE ? 250 : 600, N = MAIN + AMB;
-  const MAINC = [0x8052ff, 0xffb829, 0x15846e], AMBC = [0x8052ff, 0xffb829, 0x15846e, 0x3b2a8f, 0x2f4fd0, 0x5a2d91];
-  const CORNER = [0,1,1,2,2,0].map(i => [Math.cos(Math.PI/2 + i*2.0944), Math.sin(Math.PI/2 + i*2.0944), 0]);
+  const base = new THREE.ConeGeometry(1, 1.6, 4, 1, false);        // closed square pyramid (4 radial segments)
+  const geo = base.toNonIndexed(); geo.deleteAttribute('uv'); geo.computeVertexNormals();   // non-indexed => flat per-face normals, crisp edges
 
-  const V = N * 6;
-  const A = { c: new Float32Array(V*3), t: [0,1,2,3].map(() => new Float32Array(V*3)), col: new Float32Array(V*4), s: new Float32Array(V*2) };
-  const samplers = SHAPES.map(edgeSampler);
+  const T = [0,1,2,3].map(() => new Float32Array(N*3)), SD = new Float32Array(N*4);   // SD = seed, isAmbient, size, palette index
+  const samplers = SHAPES.map(sampler), mainPal = [0,1,2], ambPal = [0,1,2,3,4,5];
   for (let p = 0; p < N; p++) {
     const amb = p >= MAIN, seed = Math.random();
-    const hex = new THREE.Color((amb ? AMBC : MAINC)[(Math.random() * (amb ? AMBC : MAINC).length) | 0]);
-    const pts = amb ? (() => { const q = [(Math.random()-.5)*26, (Math.random()-.5)*16, -6 - Math.random()*10]; return [q,q,q,q]; })() : samplers.map(s => s());
-    const size = (amb ? .06 + Math.random()*.08 : .022 + Math.random()*.04) * (MOBILE ? 1.5 : 1);   // finer glyphs for the dense desktop cloud
-    for (let k = 0; k < 6; k++) {
-      const v = p*6 + k;
-      A.c.set(CORNER[k].map(c => c*size), v*3);
-      for (let s = 0; s < 4; s++) A.t[s].set(pts[s], v*3);
-      A.col.set([hex.r, hex.g, hex.b, amb ? .28 : .95], v*4);
-      A.s.set([seed, amb ? 1 : 0], v*2);
-    }
+    const pts = amb ? (() => { const q = [(Math.random()-.5)*28, (Math.random()-.5)*17, -6 - Math.random()*11]; return [q,q,q,q]; })() : samplers.map(f => f());
+    for (let s = 0; s < 4; s++) T[s].set(pts[s], p*3);
+    const size = (amb ? .07 + Math.random()*.09 : .02 + Math.random()*.03) * (MOBILE ? 1.5 : 1);
+    SD.set([seed, amb ? 1 : 0, size, (amb ? ambPal : mainPal)[(Math.random() * (amb ? ambPal : mainPal).length) | 0]], p*4);
   }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(V*3), 3));   // required placeholder
-  geo.setAttribute('aCorner', new THREE.BufferAttribute(A.c, 3));
-  ['tA','tB','tC','tD'].forEach((n, i) => geo.setAttribute(n, new THREE.BufferAttribute(A.t[i], 3)));
-  geo.setAttribute('aColor', new THREE.BufferAttribute(A.col, 4));
-  geo.setAttribute('aSeed', new THREE.BufferAttribute(A.s, 2));
-  geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 100);
+  ['tA','tB','tC','tD'].forEach((n, i) => geo.setAttribute(n, new THREE.InstancedBufferAttribute(T[i], 3)));
+  geo.setAttribute('aSeed', new THREE.InstancedBufferAttribute(SD, 4));
 
   const U = {
     uP: { value: 0 }, uTime: { value: 0 }, uSpinAngle: { value: 0 }, uVib: { value: 0 }, uAlpha: { value: 1 },
-    uAspect: { value: 1 }, uTan: { value: Math.tan(THREE.MathUtils.degToRad(22.5)) }, uCamZ: { value: 7 }, uRad: { value: MOBILE ? 1.1 : .9 },
-    uM: { value: Array.from({ length: 8 }, () => new THREE.Vector3(0, 0, -100)) },      // x,y = pointer in NDC; z = birth time
+    uAspect: { value: 1 }, uTan: { value: Math.tan(THREE.MathUtils.degToRad(22.5)) }, uCamZ: { value: 7 }, uRad: { value: MOBILE ? 1.2 : 1 },
+    uMouse: { value: new THREE.Vector2() }, uStr: { value: 0 },      // smoothed pointer (NDC) + hover strength 0..1
     uOff: { value: [0,1,2,3].map(() => new THREE.Vector3()) }, uScl: { value: [1,1,1,1] }
   };
   const mat = new THREE.ShaderMaterial({
-    uniforms: U, transparent: true, depthWrite: false,
+    uniforms: U,
     vertexShader: `
-      attribute vec3 aCorner, tA, tB, tC, tD; attribute vec4 aColor; attribute vec2 aSeed;
-      uniform float uP, uTime, uSpinAngle, uVib, uAlpha, uAspect, uTan, uCamZ, uRad, uScl[4];
-      uniform vec3 uOff[4], uM[8];
-      varying vec4 vC;
+      attribute vec3 tA, tB, tC, tD; attribute vec4 aSeed;
+      uniform float uP, uTime, uSpinAngle, uVib, uAlpha, uAspect, uTan, uCamZ, uRad, uStr, uScl[4];
+      uniform vec3 uOff[4]; uniform vec2 uMouse;
+      varying vec3 vC;
 
       /* --- 3D simplex noise (Ashima / McEwan) --- */
       vec3 mod289(vec3 x){ return x - floor(x*(1./289.))*289.; }
@@ -171,51 +173,62 @@
 
       vec3 tgt(int i){ if(i==0) return tA*uScl[0]+uOff[0]; if(i==1) return tB*uScl[1]+uOff[1]; if(i==2) return tC*uScl[2]+uOff[2]; return tD*uScl[3]+uOff[3]; }
       vec3 off(int i){ if(i==0) return uOff[0]; if(i==1) return uOff[1]; if(i==2) return uOff[2]; return uOff[3]; }
+      float tintW(int i){ if(i==1) return .85; if(i==2) return .7; return 0.; }                    // blueprint cyan / data-ocean blue strength per stage
+      vec3 tintC(int i){ if(i==1) return vec3(.06,.9,1.); if(i==2) return vec3(.45,.72,1.); return vec3(0.); }
+      vec3 pal(float k){
+        if(k<.5) return vec3(.502,.322,1.); if(k<1.5) return vec3(1.,.722,.161); if(k<2.5) return vec3(.082,.518,.431);
+        if(k<3.5) return vec3(.23,.16,.56); if(k<4.5) return vec3(.18,.31,.82); return vec3(.35,.18,.57);
+      }
       mat3 rotY(float a){ float c=cos(a), s=sin(a); return mat3(c,0.,-s, 0.,1.,0., s,0.,c); }
       mat3 rotX(float a){ float c=cos(a), s=sin(a); return mat3(1.,0.,0., 0.,c,s, 0.,-s,c); }
 
       void main(){
-        float seed = aSeed.x; vec3 pos; float alpha = aColor.a;
-        if(aSeed.y > .5){                               // ambient glyphs: deep, noise-driven drift, never morph
-          vec3 q = tA*.12 + uTime*.04;
-          pos = tA + flow(q) * 1.4;
+        float seed = aSeed.x, amb = aSeed.y, size = aSeed.z;
+        vec3 pos, col = pal(aSeed.w); float glow = 0., mag = 1.;
+        if(amb > .5){                                   // ambient pyramids: deep, dim, noise-driven drift
+          pos = tA + flow(tA*.12 + uTime*.04) * 1.4; col *= .3;
         } else {
           int i = int(floor(uP)); int j = int(min(float(i)+1., 3.));
           float t = clamp(uP - floor(uP), 0., 1.); t = t*t*(3.-2.*t);
           vec3 centre = mix(off(i), off(j), t);
           pos = mix(tgt(i), tgt(j), t);
-          float mist = step(.82, seed);                 // ~18% of particles form the loose halo around each shape
-          // break apart mid-morph: scatter outward in 3D, then re-cluster
+          float mist = step(.84, seed);                 // ~16% form the loose mist halo
+          // break apart mid-morph: scatter in 3D then re-cluster
           vec3 dir = vec3(sin(seed*12.9), cos(seed*78.2), sin(seed*37.7));
           pos += dir * sin(t*3.14159) * (1.2 + seed*1.6);
-          // rotational depth around the shape centre
+          // rotational depth + slight downward pitch so tops of decks/desks are visible
           float ang = sin(uTime*.3)*.35 + uP*.45 + uSpinAngle;
-          pos = centre + rotY(ang) * (pos - centre);
-          // continuous fluid mist: organic waving displacement, stronger mid-morph and on halo particles
-          float amp = mix(.045, .2, sin(t*3.14159)) * mix(1., 5., mist);
+          pos = centre + rotX(.2) * (rotY(ang) * (pos - centre));
+          // stage 3: live ocean waves travelling across the grid
+          float wv = 1. - clamp(abs(uP - 2.), 0., 1.); wv = wv*wv*(3. - 2.*wv);
+          pos.y += wv * (sin(pos.x*1.3 + uTime*1.1)*.17 + sin(pos.z*1.6 - uTime*.8)*.13 + sin((pos.x+pos.z)*.7 + uTime*.6)*.1);
+          // continuous misty displacement
+          float amp = mix(.04, .18, sin(t*3.14159)) * mix(1., 5., mist);
           pos += flow(pos*.85 + vec3(0., 0., uTime*.25)) * amp;
-          // stage 4: dense vibration
-          if(uVib > .001) pos += flow(pos*7. + uTime*9.) * .028 * uVib;
-          // pointer impulses: repel + swirl, then elastic drift back as each impulse ages out
-          for(int k=0; k<8; k++){
-            vec3 m = uM[k]; float age = uTime - m.z;
-            float st = exp(-age*1.5) * step(0., age) * step(age, 4.);
-            vec2 mw = m.xy * vec2(uAspect, 1.) * uTan * (uCamZ - pos.z);      // pointer ray at this particle's depth
-            vec2 d = pos.xy - mw; float r = length(d);
-            float f = exp(-r*r/(uRad*uRad)) * st * (1. + .35*sin(age*9. + seed*6.28));
-            vec2 dn = d / (r + 1e-3);
-            pos.xy += dn*f*1.1 + vec2(-dn.y, dn.x)*f*.7;
-            pos.z += f*.7*(seed - .5);
-          }
-          alpha *= uAlpha * mix(1., .45, mist);
+          if(uVib > .001) pos += flow(pos*7. + uTime*9.) * .028 * uVib;      // stage 4 vibration
+          // stage tint (cyan blueprint / ice-blue ocean); ~12% keep brand accents
+          float tw = mix(tintW(i), tintW(j), t) * step(.12, seed);
+          col = mix(col, mix(tintC(i), tintC(j), t), tw) * (1. + tw*.35);
+          // magnetic hover: gentle pull toward the pointer, magnify, shift to bone-white glow
+          vec2 mw = uMouse * vec2(uAspect, 1.) * uTan * (uCamZ - pos.z);
+          vec2 d = mw - pos.xy; float r = length(d);
+          glow = exp(-r*r/(uRad*uRad)) * uStr;
+          pos.xy += d * glow * .3; pos.z += glow * .6; mag = 1. + glow*2.2;
+          col = mix(col, vec3(1.), smoothstep(.06, .55, glow)) * (1. + glow*.5);
+          col *= mix(1., .55, mist) * uAlpha;
         }
-        vec3 c = rotY(uTime*(.4+seed) + seed*6.28) * (rotX(uTime*(.3+seed*.6) + seed*3.) * aCorner);   // tumbling triangle
-        vC = vec4(aColor.rgb, alpha);
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos + c, 1.);
+        mat3 R = rotY(uTime*(.3 + seed*.5) + seed*6.28) * rotX(uTime*(.25 + seed*.4) + seed*3.);   // each pyramid tumbles on its own axis
+        vec3 n = R * normal;
+        float lit = .42 + .58*max(dot(n, normalize(vec3(.4,.8,.6))), 0.);                          // flat per-face shading = visible solid depth
+        vC = col * lit;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos + R * (position * size * mag), 1.);
       }`,
-    fragmentShader: `varying vec4 vC; void main(){ gl_FragColor = vC; }`
+    fragmentShader: `varying vec3 vC; void main(){ gl_FragColor = vec4(vC, 1.); }`
   });
-  scene.add(new THREE.LineSegments(geo, mat));
+  const mesh = new THREE.InstancedMesh(geo, mat, N);               // instanceMatrix stays identity; all motion is shader-driven
+  mesh.frustumCulled = false;
+  scene.add(mesh);
+  const mouse = { x: 0, y: 0, sx: 0, sy: 0, str: 0, on: false };
 
   /* ---------- 3. Layout: map DOM positions into world units ---------- */
   const secs = $$('[data-scrollcraft-section]'), target = $('[data-scrollcraft-3d-target]');
@@ -237,9 +250,9 @@
     const heroY = -(Math.min(Math.max(hero.y, H * .3), H * (mobile ? .8 : .6)) / H - .5) * worldH;
     U.uOff.value[0].set(heroX, heroY, 0);
     U.uOff.value[1].set(mobile ? 0 : worldW * .2, 0, 0);
-    U.uOff.value[2].set(0, mobile ? worldH * .1 : 0, -1.5);
+    U.uOff.value[2].set(0, -worldH * (mobile ? .05 : .12), -.5);
     U.uOff.value[3].set(mobile ? 0 : -worldW * .02, mobile ? worldH * .3 : 0, 0);
-    U.uScl.value = [base, base * 1.05, mobile ? base * .8 : base * 1.5, base * (mobile ? .8 : .95)];
+    U.uScl.value = [base * .72, base * 1.0, base * (mobile ? .62 : 1.3), base * (mobile ? .8 : .95)];
   }
 
   /* progress: index of the active section plus a 0-1 morph phase that runs through the last 40% of the section */
@@ -263,6 +276,10 @@
     const S = THREE.MathUtils.smoothstep;
     if (!REDUCE) U.uSpinAngle.value += dt * .9 * S(cur, 1.6, 2.0);        // pillars + exclamation block rotate; angle accumulates so it never jumps
     U.uVib.value = REDUCE ? 0 : S(cur, 2.6, 3.0);
+    const km = 1 - Math.pow(.0005, dt);                                    // pointer easing: field follows with a soft lag, then releases smoothly
+    mouse.sx += (mouse.x - mouse.sx) * km; mouse.sy += (mouse.y - mouse.sy) * km;
+    mouse.str += ((mouse.on ? 1 : 0) - mouse.str) * (1 - Math.pow(.02, dt));
+    U.uMouse.value.set(mouse.sx, mouse.sy); U.uStr.value = mouse.str;
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }
@@ -288,15 +305,14 @@
   addEventListener('touchmove', onScroll, { passive: true });     // finger-drag updates without blocking the compositor
   track();
 
-  /* ---------- 5b. Pointer + touch impulses (window-level, passive; canvas itself ignores pointer events) ---------- */
-  let slot = 0, lastPush = 0;
-  const push = (x, y) => {
-    const now = U.uTime.value; if (now - lastPush < .04) return; lastPush = now;
-    U.uM.value[slot].set((x / innerWidth) * 2 - 1, -((y / innerHeight) * 2 - 1), now); slot = (slot + 1) & 7;
-  };
+  /* ---------- 5b. Pointer + touch (window-level, passive; the canvas itself ignores pointer events) ---------- */
+  const setPointer = (x, y) => { mouse.x = (x / innerWidth) * 2 - 1; mouse.y = -((y / innerHeight) * 2 - 1); if (!mouse.on) { mouse.sx = mouse.x; mouse.sy = mouse.y; } mouse.on = true; };
   if (!REDUCE) {
-    addEventListener('pointermove', e => push(e.clientX, e.clientY), { passive: true });
-    addEventListener('touchstart', e => { const t = e.touches[0]; if (t) push(t.clientX, t.clientY); }, { passive: true });
+    addEventListener('pointermove', e => setPointer(e.clientX, e.clientY), { passive: true });
+    document.documentElement.addEventListener('pointerleave', () => { mouse.on = false; }, { passive: true });
+    addEventListener('blur', () => { mouse.on = false; });
+    ['touchstart', 'touchmove'].forEach(ev => addEventListener(ev, e => { const t = e.touches[0]; if (t) setPointer(t.clientX, t.clientY); }, { passive: true }));
+    ['touchend', 'touchcancel'].forEach(ev => addEventListener(ev, () => { mouse.on = false; }, { passive: true }));
   }
 
   /* ---------- 6. Portfolio roster, slot reservation, booking form ---------- */
