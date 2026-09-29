@@ -5,8 +5,9 @@
  *   [data-scrollcraft-section]       sections that drive morph progress (data-scrollcraft-shape = 0..3)
  *   [data-track]                     headlines whose letter-spacing tightens as they reach screen centre
  *   [data-project-url]               roster slots; a non-empty URL turns the slot into a live link
- * One THREE.InstancedMesh of closed 4-sided pyramids (ConeGeometry, 4 radial segments, flat-shaded faces).
- * Per-instance morph targets, simplex-noise mist, magnetic hover and colour shifts all run in the vertex shader.
+ * One THREE.InstancedMesh of hollow pyramid SKELETONS: EdgesGeometry of a 4-sided cone gives the 8 seams; each seam is a screen-space
+ * thickened ribbon (bold, luminous lines) and no face walls exist at all.
+ * Per-instance morph targets, simplex-noise mist, magnetic hover and colour flashes all run in the vertex shader.
  */
 (() => {
   'use strict';
@@ -115,9 +116,22 @@
   const camera = new THREE.PerspectiveCamera(45, 1, .1, 100);
   camera.position.z = 7;
 
-  const MAIN = MOBILE ? 1500 : 8000, AMB = MOBILE ? 250 : 600, N = MAIN + AMB;
-  const base = new THREE.ConeGeometry(1, 1.6, 4, 1, false);        // closed square pyramid (4 radial segments)
-  const geo = base.toNonIndexed(); geo.deleteAttribute('uv'); geo.computeVertexNormals();   // non-indexed => flat per-face normals, crisp edges
+  const MAIN = MOBILE ? 1500 : 6500, AMB = MOBILE ? 250 : 600, N = MAIN + AMB;
+  /* Hollow skeleton: EdgesGeometry strips every face and keeps only the 8 sharp seams of a square pyramid (4 apex edges + 4 base edges).
+     WebGL lines are stuck at 1px, so each seam becomes a 4-vertex ribbon; the vertex shader expands it to a fixed pixel width. */
+  const edgeGeo = new THREE.EdgesGeometry(new THREE.ConeGeometry(1, 1.6, 4, 1, false), 1);
+  const ep = edgeGeo.attributes.position, EDGES = ep.count / 2;
+  const rP0 = [], rP1 = [], rC = [], rI = [];
+  for (let e = 0; e < EDGES; e++) {
+    const a = [ep.getX(e*2), ep.getY(e*2), ep.getZ(e*2)], b = [ep.getX(e*2+1), ep.getY(e*2+1), ep.getZ(e*2+1)];
+    [[0,-1],[0,1],[1,-1],[1,1]].forEach(c => { rP0.push(...a); rP1.push(...b); rC.push(...c); });   // corner = (along-edge t, side)
+    const o = e*4; rI.push(o, o+1, o+2, o+2, o+1, o+3);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(rP0, 3));    // edge start (local pyramid space)
+  geo.setAttribute('aP1', new THREE.Float32BufferAttribute(rP1, 3));         // edge end
+  geo.setAttribute('aCorner', new THREE.Float32BufferAttribute(rC, 2));
+  geo.setIndex(rI);
 
   const T = [0,1,2,3].map(() => new Float32Array(N*3)), SD = new Float32Array(N*4);   // SD = seed, isAmbient, size, palette index
   const samplers = SHAPES.map(sampler), mainPal = [0,1,2], ambPal = [0,1,2,3,4,5];
@@ -125,7 +139,7 @@
     const amb = p >= MAIN, seed = Math.random();
     const pts = amb ? (() => { const q = [(Math.random()-.5)*28, (Math.random()-.5)*17, -6 - Math.random()*11]; return [q,q,q,q]; })() : samplers.map(f => f());
     for (let s = 0; s < 4; s++) T[s].set(pts[s], p*3);
-    const size = (amb ? .07 + Math.random()*.09 : .02 + Math.random()*.03) * (MOBILE ? 1.5 : 1);
+    const size = (amb ? .07 + Math.random()*.09 : .03 + Math.random()*.035) * (MOBILE ? 1.5 : 1);   // large enough that each skeleton reads as a pyramid
     SD.set([seed, amb ? 1 : 0, size, (amb ? ambPal : mainPal)[(Math.random() * (amb ? ambPal : mainPal).length) | 0]], p*4);
   }
   ['tA','tB','tC','tD'].forEach((n, i) => geo.setAttribute(n, new THREE.InstancedBufferAttribute(T[i], 3)));
@@ -134,16 +148,17 @@
   const U = {
     uP: { value: 0 }, uTime: { value: 0 }, uSpinAngle: { value: 0 }, uVib: { value: 0 }, uAlpha: { value: 1 },
     uAspect: { value: 1 }, uTan: { value: Math.tan(THREE.MathUtils.degToRad(22.5)) }, uCamZ: { value: 7 }, uRad: { value: MOBILE ? 1.2 : 1 },
-    uOp: { value: new THREE.Vector2(.25, .40) },                      // base opacity range per pyramid (tweak here)
+    uOp: { value: new THREE.Vector2(.75, 1.0) },                      // line brightness range (lines only; there are no faces to fade)
+    uRes: { value: new THREE.Vector2(1, 1) }, uLineW: { value: 1.6 },   // drawing-buffer size + line width in device pixels
     uMouse: { value: new THREE.Vector2() }, uStr: { value: 0 },      // smoothed pointer (NDC) + hover strength 0..1
     uOff: { value: [0,1,2,3].map(() => new THREE.Vector3()) }, uScl: { value: [1,1,1,1] }
   };
   const mat = new THREE.ShaderMaterial({
     uniforms: U,
     vertexShader: `
-      attribute vec3 tA, tB, tC, tD; attribute vec4 aSeed;
+      attribute vec3 tA, tB, tC, tD, aP1; attribute vec4 aSeed; attribute vec2 aCorner;
       uniform float uP, uTime, uSpinAngle, uVib, uAlpha, uAspect, uTan, uCamZ, uRad, uStr, uScl[4];
-      uniform vec3 uOff[4]; uniform vec2 uMouse, uOp;
+      uniform vec3 uOff[4]; uniform vec2 uMouse, uOp, uRes; uniform float uLineW;
       varying vec3 vC; varying float vA;
 
       /* --- 3D simplex noise (Ashima / McEwan) --- */
@@ -216,16 +231,22 @@
           vec2 d = mw - pos.xy; float r = length(d);
           glow = exp(-r*r/(uRad*uRad)) * uStr;
           pos.xy += d * glow * .3; pos.z += glow * .6; mag = 1. + glow*2.2;
-          col = mix(col, vec3(1.), smoothstep(.06, .55, glow)) * (1. + glow*.5);
+          col = mix(col, vec3(1.), smoothstep(.06, .55, glow)) * (1. + glow*.5);      // hover: skeleton lines flash bone-white
           col *= mix(1., .55, mist) * uAlpha;
           a *= mix(1., .6, mist);                                    // mist halo is the most see-through layer
           a = mix(a, 1., smoothstep(.06, .55, glow));                // hover: opacity eases up to 1.0 alongside the white flash
         }
         mat3 R = rotY(uTime*(.3 + seed*.5) + seed*6.28) * rotX(uTime*(.25 + seed*.4) + seed*3.);   // each pyramid tumbles on its own axis
-        vec3 n = R * normal;
-        float lit = .42 + .58*max(dot(n, normalize(vec3(.4,.8,.6))), 0.);                          // flat per-face shading = visible solid depth
-        vC = col * lit; vA = a;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos + R * (position * size * mag), 1.);
+        // skeleton ribbon: place both ends of this seam with the same instance transform, then thicken in screen space
+        vec3 wA = pos + R * (position * size * mag), wB = pos + R * (aP1 * size * mag);
+        vec4 cA = projectionMatrix * modelViewMatrix * vec4(wA, 1.), cB = projectionMatrix * modelViewMatrix * vec4(wB, 1.);
+        vec2 sA = cA.xy / cA.w * uRes * .5, sB = cB.xy / cB.w * uRes * .5;
+        vec2 dir = normalize(sB - sA + vec2(1e-5, 0.)), nrm = vec2(-dir.y, dir.x);
+        float w = uLineW * (1. + glow*.8) * mix(1., .6, amb);                  // lines swell slightly on hover; ambient ones stay thin
+        vec4 c = mix(cA, cB, aCorner.x);
+        c.xy += (nrm * aCorner.y + dir * (aCorner.x*2. - 1.)) * w * .5 * 2. / uRes * c.w;   // side offset + half-width end cap so joints close up
+        vC = col; vA = a;
+        gl_Position = c;
       }`,
     fragmentShader: `varying vec3 vC; varying float vA; void main(){ gl_FragColor = vec4(vC, vA); }`,
     transparent: true,
@@ -245,6 +266,7 @@
     W = innerWidth; H = innerHeight;
     const dpr = Math.min(devicePixelRatio || 1, MOBILE ? 1.5 : 2);
     renderer.setPixelRatio(dpr); renderer.setSize(W, H, false);
+    U.uRes.value.set(W * dpr, H * dpr); U.uLineW.value = (MOBILE ? 1.3 : 1.6) * dpr;      // keep line thickness constant across screens
     camera.aspect = W / H; camera.updateProjectionMatrix();
     U.uAspect.value = camera.aspect;
     worldH = 2 * Math.tan(THREE.MathUtils.degToRad(22.5)) * camera.position.z; worldW = worldH * camera.aspect;
