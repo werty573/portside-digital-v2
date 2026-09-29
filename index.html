@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portside Digital — Websites for Trinidad &amp; Tobago small businesses</title>
+<meta name="description" content="Fast, mobile-ready web development for Trinidad &amp; Tobago small businesses, led by Sergio Timothy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<canvas id="scrollcraft" data-scrollcraft-canvas aria-hidden="true"></canvas>
+
+<header class="nav">
+  <a href="#hero" class="brand">
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8052ff"/><stop offset="1" stop-color="#15846e"/></linearGradient></defs><path d="M3 22 13 3l10 19z" fill="none" stroke="url(#lg)" stroke-width="2.4"/></svg>
+    Portside Digital
+  </a>
+  <nav class="links label" aria-label="Primary"><a href="#work">Work</a><a href="#pricing">Pricing</a><a href="#process">Process</a></nav>
+  <a href="#book" class="pill">Book Vessel</a>
+</header>
+
+<main>
+  <!-- SECTION 1 · data-scrollcraft-shape="0" → 3D desktop workstation -->
+  <section id="hero" class="sec hero" data-scrollcraft-section data-scrollcraft-shape="0">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="label saffron coords">10.6596° N, 61.5019° W — PORT OF SPAIN, TRINIDAD</p>
+        <h1 class="display" data-track>We build websites that get small businesses found.</h1>
+        <p class="lead">Portside Digital is a fast, mobile-ready web studio for Trinidad &amp; Tobago small businesses. Every build is directed by Sergio Timothy, a computing graduate who designs and ships each site personally.</p>
+        <a href="#book" class="pill">Start a Project</a>
+      </div>
+      <!-- 3D viewport window: the workstation forms around the centre of this element -->
+      <div class="viewport" data-scrollcraft-3d-target aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 2 · shape 1 → 3D cargo vessel -->
+  <section id="work" class="sec" data-scrollcraft-section data-scrollcraft-shape="1">
+    <div class="wrap">
+      <h2 class="h-lg" data-track>Every project we've shipped, logged like cargo.</h2>
+      <div class="manifest">
+        <figure>
+          <a class="media aura" href="https://werty573.github.io/demo/" target="_blank" rel="noopener" aria-label="Open Aura Atelier live site">
+            <svg viewBox="0 0 200 60" aria-hidden="true"><path d="M6 54 30 6l24 48zM70 54 94 6l24 48z" fill="none" stroke="#ffb829" stroke-width="1.5"/><path d="M134 54 158 6l24 48z" fill="none" stroke="#8052ff" stroke-width="1.5"/></svg>
+            <span class="visit label">Visit live site</span>
+          </a>
+          <figcaption><p class="label iris">PD-001</p><h3 class="h-xs">Aura Atelier</h3><p class="caption">Handmade luxury hair art · <a class="saffron" href="https://werty573.github.io/demo/" target="_blank" rel="noopener">werty573.github.io/demo</a></p></figcaption>
+        </figure>
+        <figure>
+          <div class="media slot">
+            <span class="dot" aria-hidden="true"></span>
+            <p class="h-sm ash" id="slot-title">Slot open</p>
+            <button type="button" class="ghost" id="reserve-slot" aria-pressed="false">Reserve this berth</button>
+          </div>
+          <figcaption><p class="label iris">PD-002</p><h3 class="h-xs">Next build — in the yard</h3><p class="caption">Interactive slot for upcoming clients</p></figcaption>
+        </figure>
+        <!-- Roster slots: set data-project-url="https://…" and script.js turns the slot into a live link -->
+        <figure>
+          <a class="media empty" href="#book" data-project-url="" data-project-title=""><span class="caption">Roster slot · add live URL via data-project-url</span></a>
+          <figcaption><p class="label iris">PD-003</p><h3 class="h-xs">Awaiting cargo</h3></figcaption>
+        </figure>
+        <figure>
+          <a class="media empty" href="#book" data-project-url="" data-project-title=""><span class="caption">Roster slot · add live URL via data-project-url</span></a>
+          <figcaption><p class="label iris">PD-004</p><h3 class="h-xs">Awaiting cargo</h3></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3 · shape 2 → 3D coordinate pillars -->
+  <section id="pricing" class="sec" data-scrollcraft-section data-scrollcraft-shape="2">
+    <div class="wrap">
+      <h2 class="h-lg" data-track>Priced for where your business is now.</h2>
+      <p class="lead">All prices are in Trinidad &amp; Tobago dollars.</p>
+      <div class="tiers">
+        <article><p class="label saffron">Starter Tier</p><h3 class="h-sm">The Dock</h3><p class="price">$800 – $1,500 TTD</p><ul><li>Up to 5 pages</li><li>Mobile responsive</li><li>7-day turnaround</li></ul></article>
+        <article><p class="label saffron">Standard Tier</p><h3 class="h-sm">The Passage</h3><p class="price">$2,500 – $3,500 TTD</p><ul><li>Custom design</li><li>Basic SEO</li><li>WhatsApp &amp; booking yard integrations</li></ul></article>
+        <article><p class="label saffron">Growth Tier</p><h3 class="h-sm">The Voyage</h3><p class="price">$4,000+ TTD</p><ul><li>Full custom build architecture</li><li>E-commerce ordering loops</li><li>Advanced SEO indexing</li></ul></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 · shape 3 → rotating 3D exclamation anchor beside the form -->
+  <section id="process" class="sec last" data-scrollcraft-section data-scrollcraft-shape="3">
+    <div class="wrap book-grid">
+      <div>
+        <h2 class="h-lg" data-track>From first call to launch.</h2>
+        <ol class="steps">
+          <li><span class="label saffron">01</span><span class="h-sm">Chart the Course</span></li>
+          <li><span class="label saffron">02</span><span class="h-sm">Build the Vessel</span></li>
+          <li><span class="label saffron">03</span><span class="h-sm">Load the Cargo</span></li>
+          <li><span class="label saffron">04</span><span class="h-sm">Launch</span></li>
+        </ol>
+      </div>
+      <form id="book" novalidate>
+        <h2 class="h-sm" data-track>Sergio's Booking Yard</h2>
+        <div class="field"><label for="f-name">Your Name</label><input id="f-name" name="name" type="text" autocomplete="name" placeholder="e.g. Amara Joseph" required></div>
+        <div class="field"><label for="f-biz">Business Name</label><input id="f-biz" name="biz" type="text" autocomplete="organization" placeholder="e.g. Aura Atelier"></div>
+        <div class="field"><label for="f-phone">Phone / WhatsApp</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="(868) 000-0000" required></div>
+        <div class="field"><label for="f-pkg">Package Selection</label>
+          <select id="f-pkg" name="pkg"><option>The Dock — $800 – $1,500 TTD</option><option>The Passage — $2,500 – $3,500 TTD</option><option>The Voyage — $4,000+ TTD</option><option>Not sure yet</option></select></div>
+        <div class="field"><label for="f-spec">Project Specifications</label><textarea id="f-spec" name="spec" rows="3" placeholder="What does your business do, and what should the site do for it?"></textarea></div>
+        <p id="form-msg" class="caption" role="status"></p>
+        <div class="actions"><button class="pill" type="submit">Send via WhatsApp</button><a class="ghost" id="mail-link" href="mailto:sztimothy2036@gmail.com">Email instead</a></div>
+      </form>
+    </div>
+    <footer class="wrap foot label">
+      <a href="https://wa.me/18683195929" target="_blank" rel="noopener">WhatsApp Link — (868) 319-5929</a>
+      <a href="mailto:sztimothy2036@gmail.com">Email Contact — sztimothy2036@gmail.com</a>
+      <span>Portfolio Lead — Sergio Timothy</span>
+    </footer>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
