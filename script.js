@@ -5,8 +5,8 @@
  *   [data-scrollcraft-section]       sections that drive morph progress (data-scrollcraft-shape = 0..3)
  *   [data-track]                     headlines whose letter-spacing tightens as they reach screen centre
  *   [data-project-url]               roster slots; a non-empty URL turns the slot into a live link
- * One THREE.InstancedMesh of hollow pyramid SKELETONS: EdgesGeometry of a 4-sided cone gives the 8 seams; each seam is a screen-space
- * thickened ribbon (bold, luminous lines) and no face walls exist at all.
+ * One THREE.InstancedMesh of 4-sided pyramids (ConeGeometry, 4 radial segments) drawn with material.wireframe = true, so only the
+ * hollow edge lattice is rasterised: no faces, no EdgesGeometry, no LineSegments.
  * Per-instance morph targets, simplex-noise mist, magnetic hover and colour flashes all run in the vertex shader.
  */
 (() => {
@@ -117,22 +117,10 @@
   camera.position.z = 7;
 
   const MAIN = MOBILE ? 1500 : 6500, AMB = MOBILE ? 250 : 600, N = MAIN + AMB;
-  /* Hollow skeleton: EdgesGeometry strips every face and keeps only the 8 sharp seams of a square pyramid (4 apex edges + 4 base edges).
-     WebGL lines are stuck at 1px, so each seam becomes a 4-vertex ribbon; the vertex shader expands it to a fixed pixel width. */
-  const edgeGeo = new THREE.EdgesGeometry(new THREE.ConeGeometry(1, 1.6, 4, 1, false), 1);
-  const ep = edgeGeo.attributes.position, EDGES = ep.count / 2;
-  const rP0 = [], rP1 = [], rC = [], rI = [];
-  for (let e = 0; e < EDGES; e++) {
-    const a = [ep.getX(e*2), ep.getY(e*2), ep.getZ(e*2)], b = [ep.getX(e*2+1), ep.getY(e*2+1), ep.getZ(e*2+1)];
-    [[0,-1],[0,1],[1,-1],[1,1]].forEach(c => { rP0.push(...a); rP1.push(...b); rC.push(...c); });   // corner = (along-edge t, side)
-    const o = e*4; rI.push(o, o+1, o+2, o+2, o+1, o+3);
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(rP0, 3));    // edge start (local pyramid space)
-  geo.setAttribute('aP1', new THREE.Float32BufferAttribute(rP1, 3));         // edge end
-  geo.setAttribute('aCorner', new THREE.Float32BufferAttribute(rC, 2));
-  geo.setIndex(rI);
-
+  /* Volumetric pyramid: 4 radial segments = square pyramid. Left open at the base so the wireframe shows just the 8 seams
+     (4 apex edges + 4 base edges) without the extra spokes a closed cap would add. */
+  const geo = new THREE.ConeGeometry(1, 1.6, 4, 1, true);
+  geo.deleteAttribute('uv'); geo.deleteAttribute('normal');          // unused by the wireframe shader
   const T = [0,1,2,3].map(() => new Float32Array(N*3)), SD = new Float32Array(N*4);   // SD = seed, isAmbient, size, palette index
   const samplers = SHAPES.map(sampler), mainPal = [0,1,2], ambPal = [0,1,2,3,4,5];
   for (let p = 0; p < N; p++) {
@@ -145,20 +133,20 @@
   ['tA','tB','tC','tD'].forEach((n, i) => geo.setAttribute(n, new THREE.InstancedBufferAttribute(T[i], 3)));
   geo.setAttribute('aSeed', new THREE.InstancedBufferAttribute(SD, 4));
 
+  const OPACITY = .85;
   const U = {
     uP: { value: 0 }, uTime: { value: 0 }, uSpinAngle: { value: 0 }, uVib: { value: 0 }, uAlpha: { value: 1 },
     uAspect: { value: 1 }, uTan: { value: Math.tan(THREE.MathUtils.degToRad(22.5)) }, uCamZ: { value: 7 }, uRad: { value: MOBILE ? 1.2 : 1 },
-    uOp: { value: new THREE.Vector2(.75, 1.0) },                      // line brightness range (lines only; there are no faces to fade)
-    uRes: { value: new THREE.Vector2(1, 1) }, uLineW: { value: 1.6 },   // drawing-buffer size + line width in device pixels
+    uOpacity: { value: OPACITY },                                     // base line opacity (mirrors material.opacity)
     uMouse: { value: new THREE.Vector2() }, uStr: { value: 0 },      // smoothed pointer (NDC) + hover strength 0..1
     uOff: { value: [0,1,2,3].map(() => new THREE.Vector3()) }, uScl: { value: [1,1,1,1] }
   };
   const mat = new THREE.ShaderMaterial({
     uniforms: U,
     vertexShader: `
-      attribute vec3 tA, tB, tC, tD, aP1; attribute vec4 aSeed; attribute vec2 aCorner;
+      attribute vec3 tA, tB, tC, tD; attribute vec4 aSeed;
       uniform float uP, uTime, uSpinAngle, uVib, uAlpha, uAspect, uTan, uCamZ, uRad, uStr, uScl[4];
-      uniform vec3 uOff[4]; uniform vec2 uMouse, uOp, uRes; uniform float uLineW;
+      uniform vec3 uOff[4]; uniform vec2 uMouse; uniform float uOpacity;
       varying vec3 vC; varying float vA;
 
       /* --- 3D simplex noise (Ashima / McEwan) --- */
@@ -201,9 +189,9 @@
       void main(){
         float seed = aSeed.x, amb = aSeed.y, size = aSeed.z;
         vec3 pos, col = pal(aSeed.w); float glow = 0., mag = 1.;
-        float a = mix(uOp.x, uOp.y, fract(seed*7.31));     // translucent base state: 0.25 - 0.40
+        float a = uOpacity;                                // base line opacity 0.85
         if(amb > .5){                                   // ambient pyramids: deep, dim, noise-driven drift
-          pos = tA + flow(tA*.12 + uTime*.04) * 1.4; col *= .3; a *= .5;      // ambient field sits even fainter
+          pos = tA + flow(tA*.12 + uTime*.04) * 1.4; col *= .3; a *= .5;      // ambient field sits fainter
         } else {
           int i = int(floor(uP)); int j = int(min(float(i)+1., 3.));
           float t = clamp(uP - floor(uP), 0., 1.); t = t*t*(3.-2.*t);
@@ -231,27 +219,20 @@
           vec2 d = mw - pos.xy; float r = length(d);
           glow = exp(-r*r/(uRad*uRad)) * uStr;
           pos.xy += d * glow * .3; pos.z += glow * .6; mag = 1. + glow*2.2;
-          col = mix(col, vec3(1.), smoothstep(.06, .55, glow)) * (1. + glow*.5);      // hover: skeleton lines flash bone-white
+          col = mix(col, vec3(1.), smoothstep(.06, .55, glow)) * (1. + glow*.5);      // hover: wireframe flashes bone-white
           col *= mix(1., .55, mist) * uAlpha;
-          a *= mix(1., .6, mist);                                    // mist halo is the most see-through layer
-          a = mix(a, 1., smoothstep(.06, .55, glow));                // hover: opacity eases up to 1.0 alongside the white flash
+          a *= mix(1., .7, mist);                                    // mist halo is slightly softer
+          a = mix(a, 1., smoothstep(.06, .55, glow));                // hover: opacity eases up to 1.0 with the white flash
         }
         mat3 R = rotY(uTime*(.3 + seed*.5) + seed*6.28) * rotX(uTime*(.25 + seed*.4) + seed*3.);   // each pyramid tumbles on its own axis
-        // skeleton ribbon: place both ends of this seam with the same instance transform, then thicken in screen space
-        vec3 wA = pos + R * (position * size * mag), wB = pos + R * (aP1 * size * mag);
-        vec4 cA = projectionMatrix * modelViewMatrix * vec4(wA, 1.), cB = projectionMatrix * modelViewMatrix * vec4(wB, 1.);
-        vec2 sA = cA.xy / cA.w * uRes * .5, sB = cB.xy / cB.w * uRes * .5;
-        vec2 dir = normalize(sB - sA + vec2(1e-5, 0.)), nrm = vec2(-dir.y, dir.x);
-        float w = uLineW * (1. + glow*.8) * mix(1., .6, amb);                  // lines swell slightly on hover; ambient ones stay thin
-        vec4 c = mix(cA, cB, aCorner.x);
-        c.xy += (nrm * aCorner.y + dir * (aCorner.x*2. - 1.)) * w * .5 * 2. / uRes * c.w;   // side offset + half-width end cap so joints close up
-        vC = col; vA = a;
-        gl_Position = c;
+        vC = col * 1.15; vA = a;                                              // slight boost keeps 1px lines luminous
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos + R * (position * size * mag), 1.);
       }`,
     fragmentShader: `varying vec3 vC; varying float vA; void main(){ gl_FragColor = vec4(vC, vA); }`,
+    wireframe: true,                       // rasterise only the hollow edge lattice
     transparent: true,
-    depthWrite: false,                     // overlapping translucent faces never clip each other
-    blending: THREE.AdditiveBlending       // order-independent, so no sorting glitches; overlaps build a soft glow
+    opacity: OPACITY,                      // ShaderMaterial ignores this by itself, so the same value feeds uOpacity
+    depthWrite: false                      // overlapping translucent lines never clip each other
   });
   const mesh = new THREE.InstancedMesh(geo, mat, N);               // instanceMatrix stays identity; all motion is shader-driven
   mesh.frustumCulled = false;
@@ -264,9 +245,8 @@
   const page = el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width/2, y: r.top + scrollY + r.height/2 }; };
   function layout() {
     W = innerWidth; H = innerHeight;
-    const dpr = Math.min(devicePixelRatio || 1, MOBILE ? 1.5 : 2);
+    const dpr = MOBILE ? 1 : Math.min(devicePixelRatio || 1, 1.25);   // low pixel ratio keeps 1-device-pixel lines bold instead of hairline
     renderer.setPixelRatio(dpr); renderer.setSize(W, H, false);
-    U.uRes.value.set(W * dpr, H * dpr); U.uLineW.value = (MOBILE ? 1.3 : 1.6) * dpr;      // keep line thickness constant across screens
     camera.aspect = W / H; camera.updateProjectionMatrix();
     U.uAspect.value = camera.aspect;
     worldH = 2 * Math.tan(THREE.MathUtils.degToRad(22.5)) * camera.position.z; worldW = worldH * camera.aspect;
@@ -294,7 +274,7 @@
   };
 
   /* ---------- 4. Render loop ---------- */
-  let cur = 0, last = performance.now(), running = true;
+  let cur = 0, last = performance.now(), running = true, checked = false;
   function frame(now) {
     if (!running) return;
     const dt = Math.min(.05, (now - last) / 1000); last = now;
@@ -310,6 +290,7 @@
     mouse.str += ((mouse.on ? 1 : 0) - mouse.str) * (1 - Math.pow(.02, dt));
     U.uMouse.value.set(mouse.sx, mouse.sy); U.uStr.value = mouse.str;
     renderer.render(scene, camera);
+    if (!checked) { checked = true; ((renderer.info && renderer.info.programs) || []).forEach(p => { const d = p.diagnostics; if (d && !d.runnable) console.error('[ScrollCraft] shader failed to compile:', d.programLog, d.vertexShader && d.vertexShader.log, d.fragmentShader && d.fragmentShader.log); }); }
     requestAnimationFrame(frame);
   }
   document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) { last = performance.now(); requestAnimationFrame(frame); } });
