@@ -10,6 +10,11 @@ h1,h2,h3{font-weight:400}
 
 /* Fixed WebGL canvas: 100lvh keeps it from resizing as mobile browser bars collapse */
 #scrollcraft{position:fixed;top:0;left:0;width:100%;height:100vh;height:100lvh;z-index:0;pointer-events:none}
+/* Fine screen-grid texture over the particles (Dala-style depth); sits between the canvas and the content */
+body::before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg,rgb(0 0 0 / .32) 0 1px,transparent 1px 3px),
+    radial-gradient(ellipse 120% 90% at 60% 45%,transparent 55%,rgb(0 0 0 / .55) 100%)}
 .nav{padding-top:calc(16px + env(safe-area-inset-top,0px))}
 .sec{min-height:100vh;min-height:100svh}
 
@@ -36,7 +41,7 @@ body.menu-open{overflow:hidden}
 .media{display:flex;flex-direction:column;justify-content:flex-end;gap:18px;aspect-ratio:4/3;border-radius:24px;overflow:hidden;padding:24px}
 .aura{background:color-mix(in srgb,var(--verdant) 55%,#000);transition:transform .4s}
 .aura:hover{transform:scale(1.015)}.aura svg{width:100%}
-.slot{align-items:center;justify-content:center;text-align:center}
+.slot{align-items:center;justify-content:center;text-align:center;background:rgb(255 255 255 / .03);border:1px solid rgb(255 255 255 / .08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .slot .dot{width:12px;height:12px;border-radius:50%;background:var(--saffron)}
 .slot.reserved .dot{background:var(--verdant)}
 
