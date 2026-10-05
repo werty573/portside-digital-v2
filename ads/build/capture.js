@@ -2,12 +2,17 @@
 // Run: NODE_PATH=<dir with playwright installed> node capture.js [site-name]
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
-const { execFileSync } = require('child_process');
+const { recordScroll } = require('./frames');
 const OUT = path.resolve(__dirname, '../screenshots');
 const SITES = {
   // Bow Expressions tt is a real company and must not be named in ads: its build is shown as the fictional "Ribbon & Rose" concept.
-  'ribbon-and-rose': { url: 'https://werty573.github.io/bowexpressionstt/', sections: { about: '#about', gallery: '#gallery', inquiry: '#inquiry' }, rebrand: true },
-  'aura-atelier': { url: 'https://werty573.github.io/demo/', sections: { craft: '#brand', showroom: '#showroom', commission: '#commission' } },
+  'ribbon-and-rose': { url: 'https://werty573.github.io/bowexpressionstt/', sections: { about: '#about', gallery: '#gallery', inquiry: '#inquiry' }, rebrand: true,
+    // 6s for the video ad: drift on the hero, then cut to the custom-order form. Skips About (founder-story
+    // placeholder) and stops before the footer (placeholder phone numbers).
+    reel: async top => { const f = await top('#inquiry'); return [{ from: 0, to: 140, dur: 2.6, ease: 'out' }, { from: f - 200, to: f - 40, dur: 3.4, ease: 'out' }]; } },
+  'aura-atelier': { url: 'https://werty573.github.io/demo/', sections: { craft: '#brand', showroom: '#showroom', commission: '#commission' },
+    // 9.5s for the video ad: hold the hero, then glide down to the commission form
+    reel: async top => [{ from: 0, to: 0, dur: 1.5 }, { from: 0, to: await top('#commission'), dur: 8 }] },
 };
 
 // Swap the real business name for the fictional concept name everywhere on the page.
@@ -17,7 +22,6 @@ const REBRAND = () => {
   for (let n; (n = w.nextNode());) n.textContent = n.textContent.replace(/Bow Expressions( tt)?/g, 'Ribbon & Rose').replace(/bowexpressionstt/g, 'ribbonandrose');
   document.title = document.title.replace(/Bow Expressions tt/g, 'Ribbon & Rose');
 };
-exports.REBRAND = REBRAND;
 
 async function settle(page) {
   // walk the page so lazy images load, then wait for every image + webfont
@@ -31,7 +35,7 @@ async function settle(page) {
   await page.waitForTimeout(2500); // let hero intro animations finish
 }
 
-if (require.main === module) (async () => {
+(async () => {
   const browser = await chromium.launch();
   for (const [name, site] of Object.entries(SITES)) {
     if (process.argv[2] && process.argv[2] !== name) continue;
@@ -54,22 +58,17 @@ if (require.main === module) (async () => {
       await ctx.close();
     }
 
-    // ~14s eased smooth-scroll recording at 1440x900
-    const vctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, recordVideo: { dir, size: { width: 1440, height: 900 } } });
+    // frame-exact scroll recordings at 1440x900: the full-page scroll, plus the short reel clip for the video ad
+    const vctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
     const vp = await vctx.newPage();
     await vp.goto(site.url, { waitUntil: 'networkidle' });
     if (site.rebrand) await vp.evaluate(REBRAND);
     await settle(vp);
-    await vp.evaluate(() => new Promise(done => {
-      const max = document.body.scrollHeight - innerHeight, dur = 12000, t0 = performance.now();
-      const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      (function step(now) { const t = Math.min(1, (now - t0) / dur); scrollTo(0, ease(t) * max); t < 1 ? requestAnimationFrame(step) : setTimeout(done, 1200); })(t0);
-    }));
-    const video = vp.video(); await vctx.close();
-    // keep only the scroll itself (12s glide + 1.2s hold), dropping the load/settle frames
-    const raw = await video.path();
-    execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-sseof', '-13.4', '-i', raw, '-c:v', 'libx264', '-crf', '20', '-pix_fmt', 'yuv420p', '-r', '30', '-movflags', '+faststart', path.join(dir, 'scroll.mp4')]);
-    fs.unlinkSync(raw);
+    const max = await vp.evaluate(() => document.body.scrollHeight - innerHeight);
+    await recordScroll(vp, [{ from: 0, to: 0, dur: 0.8 }, { from: 0, to: max, dur: 12 }, { from: max, to: max, dur: 1 }], path.join(dir, 'scroll.mp4'));
+    const top = sel => vp.$eval(sel, el => Math.round(el.getBoundingClientRect().top + scrollY));
+    await recordScroll(vp, await site.reel(top), path.join(dir, 'reel.mp4'));
+    await vctx.close();
   }
   await browser.close();
 })();

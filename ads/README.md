@@ -17,8 +17,8 @@ The accessories site is shown as the fictional **"Ribbon & Rose"** concept build
 ```bash
 npm i playwright && npx playwright install chromium   # once, anywhere; point NODE_PATH at that node_modules
 cd ads/build
-node capture.js            # screenshots + scroll recordings (optionally: node capture.js aura-atelier)
-node record-highlights.js  # short Ribbon & Rose clip used in the video
+node capture.js            # screenshots + frame-exact scroll recordings (scroll.mp4, reel.mp4)
+
 node render.js             # HTML ads -> final/*.png (+ text-coverage.json)
 node video.js              # final/video-portside-19s.mp4 (needs ffmpeg)
 node pages.js              # AD_COPY.md + index.html from copy.json, validates copy limits

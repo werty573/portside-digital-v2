@@ -1,5 +1,5 @@
 // 19s 1080x1920 video ad: renders the background + text overlays as PNGs with Playwright,
-// then composites them over the two scroll recordings with ffmpeg.
+// then composites them over the frame-exact reel clips from capture.js (9.5s Aura, 6s Ribbon & Rose) with ffmpeg.
 // Key content stays inside the centre 1080x1350 band so the 4:5 feed crop keeps it.
 // Run: NODE_PATH=<dir with playwright installed> node video.js
 const { chromium } = require('playwright');
@@ -59,11 +59,11 @@ const layers = {
   await browser.close();
 
   const L = n => path.join(TMP, `${n}.png`);
-  const aura = path.join(SHOTS, 'aura-atelier', 'scroll.mp4'), bow = path.join(SHOTS, 'ribbon-and-rose', 'highlights.mp4');
+  const aura = path.join(SHOTS, 'aura-atelier', 'reel.mp4'), bow = path.join(SHOTS, 'ribbon-and-rose', 'reel.mp4');
   // timeline: 0–3 hook (Aura hero) · 3–9.5 Aura · 9.5–15.5 Ribbon & Rose concept · 15.5–19 end card
   const fc = [
-    `[1:v]trim=0:11.9,setpts=(PTS-STARTPTS)/1.25,scale=${VW}:${VH},fps=30[va]`,
-    `[2:v]trim=0.3:7.8,setpts=(PTS-STARTPTS)/1.25+9.5/TB,scale=${VW}:${VH},fps=30[vb]`,
+    `[1:v]setpts=PTS-STARTPTS,scale=${VW}:${VH}:flags=lanczos[va]`,
+    `[2:v]setpts=PTS-STARTPTS+9.5/TB,scale=${VW}:${VH}:flags=lanczos[vb]`,
     `[0:v][va]overlay=${VX}:${VY}:enable='lt(t,9.5)'[s1]`,
     `[s1][vb]overlay=${VX}:${VY}:eof_action=pass:enable='gte(t,9.5)'[s2]`,
     `[3:v]format=rgba[ua]`, `[4:v]format=rgba[ub]`,

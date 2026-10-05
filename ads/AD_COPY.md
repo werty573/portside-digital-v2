@@ -43,9 +43,9 @@ Each primary text stays under 125 words, opens with a hook in line 1, and uses 1
 
 ### Version B: Proof
 
-**Primary text** _(76 words, 1 emoji)_
+**Primary text** _(77 words, 1 emoji)_
 
-> This is a website we designed for a bridal hair-accessories studio 👇
+> This is a demo site we designed for a bridal hair-accessories brand 👇
 >
 > Dark, elegant, and built to make handmade pieces feel like luxury. It looks just as good on a phone as it does on a laptop, which matters because that's where most of your customers will see it.
 >
@@ -55,9 +55,9 @@ Each primary text stays under 125 words, opens with a hook in line 1, and uses 1
 >
 > Websites for T&T small businesses from $1,500 TTD, live in 7 days.
 
-| Headline (30/40) | Description (15/30) | CTA button |
+| Headline (28/40) | Description (15/30) | CTA button |
 |---|---|---|
-| Real sites. Built in Trinidad. | From $1,500 TTD | Learn More |
+| Our work. Built in Trinidad. | From $1,500 TTD | Learn More |
 
 ### Version C: Free offer
 
@@ -155,9 +155,9 @@ Each primary text stays under 125 words, opens with a hook in line 1, and uses 1
 
 ### Version B: Proof
 
-**Primary text** _(59 words, 1 emoji)_
+**Primary text** _(60 words, 1 emoji)_
 
-> Two builds, two ways to turn visitors into inquiries 📲
+> Two demo builds, two ways to turn visitors into inquiries 📲
 >
 > Aura Atelier gets a bespoke-request form so brides can describe the piece they want. Our Ribbon & Rose concept gets a custom-order form with event date and budget.
 >
@@ -287,9 +287,9 @@ Each primary text stays under 125 words, opens with a hook in line 1, and uses 1
 >
 > From $1,500 TTD · live in 7 days.
 
-| Headline (30/40) | Description (19/30) | CTA button |
+| Headline (29/40) | Description (19/30) | CTA button |
 |---|---|---|
-| Real builds. Made in Trinidad. | Tap card 2 to visit | Learn More |
+| Our builds. Made in Trinidad. | Tap card 2 to visit | Learn More |
 
 ### Version C: Free offer
 
@@ -326,7 +326,7 @@ Each primary text stays under 125 words, opens with a hook in line 1, and uses 1
 
 **Primary text** _(23 words, 1 emoji)_
 
-> We built this for a bridal hair-art studio ✨ and it's live at werty573.github.io/demo. Yours next? From $1,500 TTD, live in 7 days.
+> Our demo build for a bridal hair-art brand ✨ See it live at werty573.github.io/demo. Yours next? From $1,500 TTD, live in 7 days.
 
 | Headline (25/40) | Description (17/30) | CTA button |
 |---|---|---|
@@ -392,7 +392,7 @@ Each primary text stays under 125 words, opens with a hook in line 1, and uses 1
 
 > Customers are searching for you online. What do they find? 🔍
 >
-> Watch two real websites we built, then picture yours.
+> Watch two demo websites we built, then picture yours.
 >
 > Portside Digital: fast, mobile-first websites for Trinidad & Tobago small businesses. Live in 7 days, from $1,500 TTD. Message us on WhatsApp to get started.
 
@@ -402,9 +402,9 @@ Each primary text stays under 125 words, opens with a hook in line 1, and uses 1
 
 ### Version B: Proof
 
-**Primary text** _(42 words, 1 emoji)_
+**Primary text** _(43 words, 1 emoji)_
 
-> 19 seconds, 2 websites, built in Trinidad 🎬
+> 19 seconds, 2 demo websites, built in Trinidad 🎬
 >
 > Aura Atelier, a luxury bridal hair-art studio (live at werty573.github.io/demo), and Ribbon & Rose, our concept for a handmade accessories shop with custom orders.
 >
@@ -412,7 +412,7 @@ Each primary text stays under 125 words, opens with a hook in line 1, and uses 1
 
 | Headline (24/40) | Description (15/30) | CTA button |
 |---|---|---|
-| Real sites, built in T&T | From $1,500 TTD | Learn More |
+| Demo sites, built in T&T | From $1,500 TTD | Learn More |
 
 ### Version C: Free offer
 

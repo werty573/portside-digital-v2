@@ -64,7 +64,7 @@ const ads = [
     <div class="label" style="left:56px;top:150px"><small>Industry · Bridal hair art</small><strong>Aura Atelier</strong></div>
     ${laptop(84, 300, 780, img(shot(AURA, 'desktop-hero')))}
     ${phone(800, 400, 230, shot(AURA, 'mobile-hero'))}
-    <div class="tag" style="left:56px;top:968px">Live site · werty573.github.io/demo</div>` },
+    <div class="tag" style="left:56px;top:968px">Demo build · werty573.github.io/demo</div>` },
   { id: 'car3-ribbon', ...SQ, theme: 'light', body: `
     ${glow(-100, 300, 600, '#00B3A6')}${logo(56, 56, 'light')}
     <div class="label" style="left:56px;top:150px"><small>Industry · Handmade accessories</small><strong>Ribbon &amp; Rose</strong></div>

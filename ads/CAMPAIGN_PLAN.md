@@ -104,10 +104,8 @@ Prefill: Full name, Phone number (WhatsApp), Email.
 
 ## 7. Pre-launch checklist
 
-- [ ] Fix the site issues listed in the review: the founder-story placeholder, the placeholder phone numbers, the inquiry forms that don't send anywhere, and the mismatched stock photos. Ad viewers *will* click through to the live sites.
+- [ ] Polish the demo sites that the B-version links point to (werty573.github.io/demo): swap the stock photos that don't match the product names. Ad viewers who click through will judge your work by them.
 - [ ] Confirm Aura Atelier is OK to name. The accessories build is already shown only as the fictional "Ribbon & Rose" concept.
-- [ ] Update the old WhatsApp number (319-5929) and the $800 starting price on portside-digital-v2 so they match the ads
 - [ ] WhatsApp Business connected to the Page, with greeting + away messages on
 - [ ] Facebook Page has a profile photo (P mark), cover, About section with "Websites for T&T small businesses · from $1,500 TTD"
-- [ ] Add a UTM to the live-site links in B versions (`?utm_source=meta&utm_campaign=pd_launch`) if you later add analytics
 - [ ] Payment method + Ads Manager account in TTD or USD (decide once, because you can't change it later)
