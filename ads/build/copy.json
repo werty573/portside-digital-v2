@@ -1,0 +1,84 @@
+{
+  "details": {
+    "business": "Portside Digital",
+    "area": "Trinidad & Tobago",
+    "price": "From $1,500 TTD",
+    "turnaround": "7 days",
+    "whatsapp": "+1 (868) 259-1409",
+    "whatsappLink": "https://wa.me/18682591409",
+    "email": "sztimothy2036@gmail.com",
+    "offer": "Free homepage mockup"
+  },
+  "creatives": [
+    {
+      "id": "sq1-look-premium", "name": "Square 1 — Look premium. Get booked.", "format": "1080×1080 feed image", "files": ["final/sq1-look-premium.png"],
+      "versions": {
+        "A": { "primary": "Customers are searching for you online. What do they find? 🔍\n\nIf it's an old Facebook post and a number that doesn't answer, they've already moved on to someone who looks more professional.\n\nPortside Digital builds fast, mobile-first websites for Trinidad & Tobago small businesses. You get a site that looks premium, shows your work, and turns visitors into WhatsApp inquiries.\n\n• Live in 7 days\n• From $1,500 TTD\n• Built and supported locally\n\nTap \"Send message\" and tell us about your business.", "headline": "Look premium. Get booked.", "description": "Live in 7 days", "cta": "Send WhatsApp Message" },
+        "B": { "primary": "This is a website we designed for a bridal hair-accessories studio 👇\n\nDark, elegant, and built to make handmade pieces feel like luxury. It looks just as good on a phone as it does on a laptop, which matters because that's where most of your customers will see it.\n\nThat's the standard every Portside Digital build gets, whatever your industry.\n\nSee it live: werty573.github.io/demo\n\nWebsites for T&T small businesses from $1,500 TTD, live in 7 days.", "headline": "Real sites. Built in Trinidad.", "description": "From $1,500 TTD", "cta": "Learn More" },
+        "C": { "primary": "Want to see your business looking this good before you spend a dollar? 🎁\n\nWe'll design a FREE homepage mockup for your business. It's your name, your services and your colours, in a premium layout like the one in this ad.\n\nIf you love it, we build the full site in 7 days, from $1,500 TTD. If not, you keep the mockup and owe nothing.\n\nOnly a few free mockups each week, so message us on WhatsApp to claim yours.", "headline": "Get a free homepage mockup", "description": "No cost. No obligation.", "cta": "Send WhatsApp Message" }
+      }
+    },
+    {
+      "id": "sq2-open-24-7", "name": "Square 2 — Your shop, open 24/7.", "format": "1080×1080 feed image", "files": ["final/sq2-open-24-7.png"],
+      "versions": {
+        "A": { "primary": "Your shop closes at 6. Your customers keep searching till midnight. 🌙\n\nWithout a website, every late-night search for what you sell goes to someone else.\n\nA Portside Digital website works while you sleep. It shows your products, answers the common questions, and collects custom orders and inquiries 24/7.\n\nMobile-first, live in 7 days, from $1,500 TTD.\n\nSend us a WhatsApp and we'll tell you exactly what your site needs.", "headline": "Your shop, open 24/7", "description": "Live in 7 days", "cta": "Send WhatsApp Message" },
+        "B": { "primary": "Designed for a handmade accessories shop 🎀\n\nThis concept build shows every collection, lets customers filter by style, and has a custom-order form for bridal and event pieces. A site like this works around the clock, even when the owner is offline.\n\nPortside Digital builds sites like this for small businesses across Trinidad & Tobago. From $1,500 TTD, live in 7 days.", "headline": "Built to take orders 24/7", "description": "From $1,500 TTD", "cta": "Learn More" },
+        "C": { "primary": "What would your shop look like open 24/7 online? Let us show you, free. 🎁\n\nSend us your business name and what you sell. We'll design a homepage mockup at no cost and with no obligation.\n\nLike it? We build the full mobile-first site in 7 days, from $1,500 TTD.\n\nLimited free mockups each week. Tap below to claim yours.", "headline": "Free mockup of your website", "description": "No cost. No obligation.", "cta": "Get Quote" }
+      }
+    },
+    {
+      "id": "sq3-no-website", "name": "Square 3 — No website? Invisible.", "format": "1080×1080 feed image", "files": ["final/sq3-no-website.png"],
+      "versions": {
+        "A": { "primary": "Customers are searching for you online. What do they find? 👀\n\nMost people check a business online before they message, visit or buy. If they find nothing, or something outdated, they quietly pick a competitor.\n\nPortside Digital fixes that with a fast, professional website and a built-in inquiry form, so the searches turn into conversations.\n\nTrinidad & Tobago small businesses · From $1,500 TTD · Live in 7 days.", "headline": "No website? You're invisible.", "description": "Fix it in 7 days", "cta": "Send WhatsApp Message" },
+        "B": { "primary": "Two builds, two ways to turn visitors into inquiries 📲\n\nAura Atelier gets a bespoke-request form so brides can describe the piece they want. Our Ribbon & Rose concept gets a custom-order form with event date and budget.\n\nBoth are designed mobile-first. See Aura Atelier live: werty573.github.io/demo\n\nYour business could be next. From $1,500 TTD, live in 7 days.", "headline": "Websites that bring inquiries", "description": "See our live work", "cta": "Learn More" },
+        "C": { "primary": "Stop being invisible online, and start with a free mockup. 🎁\n\nTell us about your business and we'll design your homepage for free. You'll see exactly how you'd look to customers who search for you.\n\nNo cost, no obligation. If you want the full site, it's live in 7 days, from $1,500 TTD.\n\nMessage us on WhatsApp to claim a spot this week.", "headline": "Be found. Free mockup.", "description": "Limited spots weekly", "cta": "Send WhatsApp Message" }
+      }
+    },
+    {
+      "id": "sq4-free-mockup", "name": "Square 4 — Your homepage. Mocked up free.", "format": "1080×1080 feed image", "files": ["final/sq4-free-mockup.png"],
+      "versions": {
+        "A": { "primary": "Customers are searching for you online. What do they find?\n\nIf you're not sure, let's fix that, starting free. 🎁\n\nWe'll design a homepage mockup for your business with your name, services and colours, so you can see what customers should be finding.\n\nNo cost and no obligation. If you want it built, it's live in 7 days, from $1,500 TTD.\n\nPortside Digital · Websites for T&T small businesses.", "headline": "Your homepage, mocked up free", "description": "No cost. No obligation.", "cta": "Get Quote" },
+        "B": { "primary": "Before you hire anyone, look at their work. Here's ours 👇\n\nwerty573.github.io/demo: luxury bridal hair art\nPlus the handmade accessories shop in this ad\n\nLike what you see? We'll design a homepage mockup for YOUR business for free, so you can judge us on your own site before you pay anything.\n\nFull builds from $1,500 TTD, live in 7 days.", "headline": "See our work, then yours free", "description": "Free homepage mockup", "cta": "Get Quote" },
+        "C": { "primary": "FREE: a custom homepage mockup for your business 🎁\n\nHere's how it works:\n1. Tell us your business name and what you do\n2. We design your homepage, free\n3. You decide. Keep it, or let us build the full site in 7 days from $1,500 TTD\n\nWe only take a few mockups each week to keep quality high. Tap below to claim yours.", "headline": "Claim your free mockup", "description": "Limited spots weekly", "cta": "Sign Up" }
+      }
+    },
+    {
+      "id": "carousel", "name": "Carousel — Hook → 2 builds → Your business next?", "format": "4 × 1080×1080 carousel cards", "files": ["final/car1-hook.png", "final/car2-aura.png", "final/car3-ribbon.png", "final/car4-your-business.png"],
+      "cards": [
+        { "file": "final/car1-hook.png", "headline": "Customers are searching", "description": "What do they find?", "link": "https://wa.me/18682591409" },
+        { "file": "final/car2-aura.png", "headline": "Bridal hair art studio", "description": "See the live site", "link": "https://werty573.github.io/demo/" },
+        { "file": "final/car3-ribbon.png", "headline": "Handmade accessories shop", "description": "Concept build", "link": "https://wa.me/18682591409" },
+        { "file": "final/car4-your-business.png", "headline": "Your business next?", "description": "From $1,500 TTD", "link": "https://wa.me/18682591409" }
+      ],
+      "versions": {
+        "A": { "primary": "Customers are searching for you online. What do they find? 🔍\n\nSwipe 👉 to see what a Portside Digital website looks like, then picture your business there.\n\nFast, mobile-first sites for Trinidad & Tobago small businesses. Live in 7 days, from $1,500 TTD.", "headline": "Your business next?", "description": "Live in 7 days", "cta": "Send WhatsApp Message" },
+        "B": { "primary": "Real websites, built in Trinidad. Swipe through 👉\n\nCard 2: a luxury bridal hair-art studio\nCard 3: a handmade accessories shop with custom orders (concept build)\n\nTap card 2 to see Aura Atelier live. Then tell us about your business, and we'll show you what yours could look like.\n\nFrom $1,500 TTD · live in 7 days.", "headline": "Real builds. Made in Trinidad.", "description": "Tap card 2 to visit", "cta": "Learn More" },
+        "C": { "primary": "Swipe 👉 then claim a FREE homepage mockup for your business. 🎁\n\nWe'll design it with your name, services and colours, at no cost and with no obligation. If you love it, we build the whole site in 7 days, from $1,500 TTD.\n\nLimited spots each week.", "headline": "Free homepage mockup", "description": "No cost. No obligation.", "cta": "Send WhatsApp Message" }
+      }
+    },
+    {
+      "id": "story1-aura", "name": "Story/Reel 1 — Your site could look this good.", "format": "1080×1920 Stories / Reels", "files": ["final/story1-aura.png"],
+      "versions": {
+        "A": { "primary": "Customers are searching for you online. What do they find? 🔍 Make it something like this. Mobile-first websites for T&T small businesses, live in 7 days.", "headline": "Your site could look this good", "description": "From $1,500 TTD", "cta": "Send WhatsApp Message" },
+        "B": { "primary": "We built this for a bridal hair-art studio ✨ and it's live at werty573.github.io/demo. Yours next? From $1,500 TTD, live in 7 days.", "headline": "Built by Portside Digital", "description": "See the live site", "cta": "Learn More" },
+        "C": { "primary": "Get a FREE homepage mockup for your business 🎁 No cost, no obligation. Full sites from $1,500 TTD, live in 7 days.", "headline": "Claim your free mockup", "description": "Limited spots weekly", "cta": "Send WhatsApp Message" }
+      }
+    },
+    {
+      "id": "story2-ribbon", "name": "Story/Reel 2 — Websites for T&T small businesses.", "format": "1080×1920 Stories / Reels", "files": ["final/story2-ribbon.png"],
+      "versions": {
+        "A": { "primary": "Your customers are on their phones right now, searching. 📱 Can they find you? Portside Digital builds mobile-first websites for Trinidad & Tobago small businesses.", "headline": "Websites for T&T businesses", "description": "Live in 7 days", "cta": "Send WhatsApp Message" },
+        "B": { "primary": "A handmade accessories shop with gallery filters and a custom-order form 🎀 Yours could work like this. From $1,500 TTD, live in 7 days.", "headline": "Built to take custom orders", "description": "From $1,500 TTD", "cta": "Learn More" },
+        "C": { "primary": "Free homepage mockup for your business 🎁 Tell us what you do and we'll design it. No obligation. Full builds live in 7 days.", "headline": "Get your free mockup", "description": "No cost. No obligation.", "cta": "Send WhatsApp Message" }
+      }
+    },
+    {
+      "id": "video-portside-19s", "name": "Video — 19s Reel (hook → 2 builds → end card)", "format": "1080×1920 video, 19s (Reels/Stories; 4:5-safe for Feed)", "files": ["final/video-portside-19s.mp4"],
+      "versions": {
+        "A": { "primary": "Customers are searching for you online. What do they find? 🔍\n\nWatch two real websites we built, then picture yours.\n\nPortside Digital: fast, mobile-first websites for Trinidad & Tobago small businesses. Live in 7 days, from $1,500 TTD. Message us on WhatsApp to get started.", "headline": "What do customers find?", "description": "Live in 7 days", "cta": "Send WhatsApp Message" },
+        "B": { "primary": "19 seconds, 2 websites, built in Trinidad 🎬\n\nAura Atelier, a luxury bridal hair-art studio (live at werty573.github.io/demo), and Ribbon & Rose, our concept for a handmade accessories shop with custom orders.\n\nYour business next? From $1,500 TTD, live in 7 days.", "headline": "Real sites, built in T&T", "description": "From $1,500 TTD", "cta": "Learn More" },
+        "C": { "primary": "Like what you see? Get a FREE homepage mockup for your business 🎁\n\nNo cost, no obligation. We design it with your name, services and colours. If you love it, we build the full site in 7 days, from $1,500 TTD.\n\nLimited spots each week. Message us on WhatsApp.", "headline": "Free homepage mockup", "description": "No cost. No obligation.", "cta": "Send WhatsApp Message" }
+      }
+    }
+  ]
+}

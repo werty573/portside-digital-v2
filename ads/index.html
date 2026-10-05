@@ -1,0 +1,248 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portside Ad Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B1F3A;--teal:#00B3A6;--teal-ink:#00897F;--coral:#FF6B5E;--paper:#F4F6FA;--line:#DDE3EC;--ink:#0B1F3A;--muted:#5B6B82;--card:#fff}
+@media (prefers-color-scheme:dark){:root{--paper:#08162B;--line:#1E3352;--ink:#E8EEF7;--muted:#93A3BA;--card:#0F2340;--teal-ink:#2FD1C4}}
+*{box-sizing:border-box;margin:0}body{background:var(--paper);color:var(--ink);font:15px/1.55 Inter,system-ui,sans-serif}
+.top{background:var(--navy);color:#fff;padding:40px 16px 34px}.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+.top .wrap{display:flex;flex-wrap:wrap;gap:24px;align-items:end;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px;font:800 22px/1 Sora;letter-spacing:-.04em}.logo svg{height:32px}.logo i{font-style:normal;color:var(--teal)}
+h1{font:800 clamp(30px,5vw,48px)/1.05 Sora;letter-spacing:-.04em;margin-top:18px}h1 em{font-style:normal;color:var(--teal)}
+.facts{display:flex;flex-wrap:wrap;gap:8px}.facts span{font-weight:600;font-size:13px;padding:8px 12px;border-radius:999px;background:rgb(255 255 255/.08);border:1px solid rgb(255 255 255/.15)}
+nav.toc{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav.toc .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:10px;padding-bottom:10px}nav.toc .wrap{scrollbar-width:none}nav.toc a{white-space:nowrap;font-weight:600;font-size:13px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px}nav.toc a:hover{background:var(--card);color:var(--ink)}
+section.ad{padding:48px 0;scroll-margin-top:56px;border-bottom:1px solid var(--line)}
+.ad h2{font:800 26px/1.15 Sora;letter-spacing:-.03em}.ad .fmt{color:var(--muted);font-weight:500;margin:4px 0 22px}.ad .fmt b{color:var(--teal-ink)}
+.grid{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:28px;align-items:start}
+.media{position:sticky;top:64px}.media img,.media video{width:100%;display:block;border-radius:14px;box-shadow:0 12px 30px rgb(11 31 58/.15);background:#000}
+.media .tall{max-width:300px;margin:0 auto}
+.car{display:grid;grid-template-columns:1fr 1fr;gap:10px}.car img{border-radius:10px;aspect-ratio:1;object-fit:cover}
+.cards{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px;font-size:13px;color:var(--muted)}.cards b{color:var(--ink)}
+.vers{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.ver{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.ver header{display:flex;align-items:center;gap:10px}.ver header b{font:700 15px Sora;flex:1}
+.badge{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font:800 14px Sora;color:var(--navy)}.bA{background:var(--coral)}.bB{background:var(--teal)}.bC{background:#F5C04A}
+.copy{font:600 12px Inter;border:1px solid var(--line);background:none;color:var(--muted);border-radius:999px;padding:6px 10px;cursor:pointer;min-height:32px}.copy:hover{color:var(--ink);border-color:var(--ink)}
+.primary{font-size:14px;flex:1}
+.fbcard{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--paper);border-radius:10px;padding:12px}
+.fbcard small{display:block;color:var(--muted);font-size:12px}.fbcard strong{display:block;font-size:14px}
+.fbcta{flex:none;font-weight:700;font-size:12px;background:var(--line);border-radius:8px;padding:8px 10px;color:var(--ink)}
+.meta{font-size:12px;color:var(--muted)}
+footer{padding:40px 16px;color:var(--muted);text-align:center;font-size:13px}
+@media (max-width:820px){.grid{grid-template-columns:1fr}.media{position:static}}
+</style></head><body>
+<header class="top"><div class="wrap"><div><div class="logo"><svg viewBox="0 0 26.4 30"><rect width="10" height="30" rx="2.4" fill="#fff"/><path d="M13.8 0H18.2A8.2 8.2 0 0 1 18.2 16.4H13.8A2.4 2.4 0 0 1 11.4 14V2.4A2.4 2.4 0 0 1 13.8 0Z" fill="#00B3A6"/><rect x="11.4" y="17.8" width="6.6" height="6.6" rx="2" fill="#FF6B5E"/></svg>Portside <i>Digital</i></div>
+<h1>Facebook ad set: <em>8 creatives, 24 ads</em></h1></div>
+<div class="facts"><span>Trinidad & Tobago</span><span>From $1,500 TTD</span><span>Live in 7 days</span><span>WhatsApp +1 (868) 259-1409</span><span>Free homepage mockup</span></div></div></header>
+<nav class="toc"><div class="wrap"><a href="#sq1-look-premium">Square 1</a><a href="#sq2-open-24-7">Square 2</a><a href="#sq3-no-website">Square 3</a><a href="#sq4-free-mockup">Square 4</a><a href="#carousel">Carousel</a><a href="#story1-aura">Story/Reel 1</a><a href="#story2-ribbon">Story/Reel 2</a><a href="#video-portside-19s">Video</a><a href="CAMPAIGN_PLAN.md">Campaign plan</a></div></nav>
+<main class="wrap">
+<section class="ad" id="sq1-look-premium"><h2>Square 1 — Look premium. Get booked.</h2><p class="fmt">1080×1080 feed image · <b>Text cover 14%</b></p>
+<div class="grid"><div class="media"><img src="final/sq1-look-premium.png" alt="" loading="lazy" class=""></div>
+<div class="vers"><article class="ver"><header><span class="badge bA">A</span><b>Pain point</b><button class="copy" data-copy="Customers are searching for you online. What do they find? 🔍
+
+If it's an old Facebook post and a number that doesn't answer, they've already moved on to someone who looks more professional.
+
+Portside Digital builds fast, mobile-first websites for Trinidad &amp; Tobago small businesses. You get a site that looks premium, shows your work, and turns visitors into WhatsApp inquiries.
+
+• Live in 7 days
+• From $1,500 TTD
+• Built and supported locally
+
+Tap "Send message" and tell us about your business.">Copy text</button></header>
+  <p class="primary">Customers are searching for you online. What do they find? 🔍<br><br>If it's an old Facebook post and a number that doesn't answer, they've already moved on to someone who looks more professional.<br><br>Portside Digital builds fast, mobile-first websites for Trinidad &amp; Tobago small businesses. You get a site that looks premium, shows your work, and turns visitors into WhatsApp inquiries.<br><br>• Live in 7 days<br>• From $1,500 TTD<br>• Built and supported locally<br><br>Tap "Send message" and tell us about your business.</p>
+  <div class="fbcard"><div><small>Live in 7 days</small><strong>Look premium. Get booked.</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">84 words · 1 emoji · headline 25/40 · description 14/30</p></article><article class="ver"><header><span class="badge bB">B</span><b>Proof</b><button class="copy" data-copy="This is a website we designed for a bridal hair-accessories studio 👇
+
+Dark, elegant, and built to make handmade pieces feel like luxury. It looks just as good on a phone as it does on a laptop, which matters because that's where most of your customers will see it.
+
+That's the standard every Portside Digital build gets, whatever your industry.
+
+See it live: werty573.github.io/demo
+
+Websites for T&amp;T small businesses from $1,500 TTD, live in 7 days.">Copy text</button></header>
+  <p class="primary">This is a website we designed for a bridal hair-accessories studio 👇<br><br>Dark, elegant, and built to make handmade pieces feel like luxury. It looks just as good on a phone as it does on a laptop, which matters because that's where most of your customers will see it.<br><br>That's the standard every Portside Digital build gets, whatever your industry.<br><br>See it live: werty573.github.io/demo<br><br>Websites for T&amp;T small businesses from $1,500 TTD, live in 7 days.</p>
+  <div class="fbcard"><div><small>From $1,500 TTD</small><strong>Real sites. Built in Trinidad.</strong></div><span class="fbcta">Learn More</span></div>
+  <p class="meta">76 words · 1 emoji · headline 30/40 · description 15/30</p></article><article class="ver"><header><span class="badge bC">C</span><b>Free offer</b><button class="copy" data-copy="Want to see your business looking this good before you spend a dollar? 🎁
+
+We'll design a FREE homepage mockup for your business. It's your name, your services and your colours, in a premium layout like the one in this ad.
+
+If you love it, we build the full site in 7 days, from $1,500 TTD. If not, you keep the mockup and owe nothing.
+
+Only a few free mockups each week, so message us on WhatsApp to claim yours.">Copy text</button></header>
+  <p class="primary">Want to see your business looking this good before you spend a dollar? 🎁<br><br>We'll design a FREE homepage mockup for your business. It's your name, your services and your colours, in a premium layout like the one in this ad.<br><br>If you love it, we build the full site in 7 days, from $1,500 TTD. If not, you keep the mockup and owe nothing.<br><br>Only a few free mockups each week, so message us on WhatsApp to claim yours.</p>
+  <div class="fbcard"><div><small>No cost. No obligation.</small><strong>Get a free homepage mockup</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">80 words · 1 emoji · headline 26/40 · description 23/30</p></article></div></div></section>
+<section class="ad" id="sq2-open-24-7"><h2>Square 2 — Your shop, open 24/7.</h2><p class="fmt">1080×1080 feed image · <b>Text cover 11.2%</b></p>
+<div class="grid"><div class="media"><img src="final/sq2-open-24-7.png" alt="" loading="lazy" class=""></div>
+<div class="vers"><article class="ver"><header><span class="badge bA">A</span><b>Pain point</b><button class="copy" data-copy="Your shop closes at 6. Your customers keep searching till midnight. 🌙
+
+Without a website, every late-night search for what you sell goes to someone else.
+
+A Portside Digital website works while you sleep. It shows your products, answers the common questions, and collects custom orders and inquiries 24/7.
+
+Mobile-first, live in 7 days, from $1,500 TTD.
+
+Send us a WhatsApp and we'll tell you exactly what your site needs.">Copy text</button></header>
+  <p class="primary">Your shop closes at 6. Your customers keep searching till midnight. 🌙<br><br>Without a website, every late-night search for what you sell goes to someone else.<br><br>A Portside Digital website works while you sleep. It shows your products, answers the common questions, and collects custom orders and inquiries 24/7.<br><br>Mobile-first, live in 7 days, from $1,500 TTD.<br><br>Send us a WhatsApp and we'll tell you exactly what your site needs.</p>
+  <div class="fbcard"><div><small>Live in 7 days</small><strong>Your shop, open 24/7</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">70 words · 1 emoji · headline 20/40 · description 14/30</p></article><article class="ver"><header><span class="badge bB">B</span><b>Proof</b><button class="copy" data-copy="Designed for a handmade accessories shop 🎀
+
+This concept build shows every collection, lets customers filter by style, and has a custom-order form for bridal and event pieces. A site like this works around the clock, even when the owner is offline.
+
+Portside Digital builds sites like this for small businesses across Trinidad &amp; Tobago. From $1,500 TTD, live in 7 days.">Copy text</button></header>
+  <p class="primary">Designed for a handmade accessories shop 🎀<br><br>This concept build shows every collection, lets customers filter by style, and has a custom-order form for bridal and event pieces. A site like this works around the clock, even when the owner is offline.<br><br>Portside Digital builds sites like this for small businesses across Trinidad &amp; Tobago. From $1,500 TTD, live in 7 days.</p>
+  <div class="fbcard"><div><small>From $1,500 TTD</small><strong>Built to take orders 24/7</strong></div><span class="fbcta">Learn More</span></div>
+  <p class="meta">62 words · 1 emoji · headline 25/40 · description 15/30</p></article><article class="ver"><header><span class="badge bC">C</span><b>Free offer</b><button class="copy" data-copy="What would your shop look like open 24/7 online? Let us show you, free. 🎁
+
+Send us your business name and what you sell. We'll design a homepage mockup at no cost and with no obligation.
+
+Like it? We build the full mobile-first site in 7 days, from $1,500 TTD.
+
+Limited free mockups each week. Tap below to claim yours.">Copy text</button></header>
+  <p class="primary">What would your shop look like open 24/7 online? Let us show you, free. 🎁<br><br>Send us your business name and what you sell. We'll design a homepage mockup at no cost and with no obligation.<br><br>Like it? We build the full mobile-first site in 7 days, from $1,500 TTD.<br><br>Limited free mockups each week. Tap below to claim yours.</p>
+  <div class="fbcard"><div><small>No cost. No obligation.</small><strong>Free mockup of your website</strong></div><span class="fbcta">Get Quote</span></div>
+  <p class="meta">60 words · 1 emoji · headline 27/40 · description 23/30</p></article></div></div></section>
+<section class="ad" id="sq3-no-website"><h2>Square 3 — No website? Invisible.</h2><p class="fmt">1080×1080 feed image · <b>Text cover 13.4%</b></p>
+<div class="grid"><div class="media"><img src="final/sq3-no-website.png" alt="" loading="lazy" class=""></div>
+<div class="vers"><article class="ver"><header><span class="badge bA">A</span><b>Pain point</b><button class="copy" data-copy="Customers are searching for you online. What do they find? 👀
+
+Most people check a business online before they message, visit or buy. If they find nothing, or something outdated, they quietly pick a competitor.
+
+Portside Digital fixes that with a fast, professional website and a built-in inquiry form, so the searches turn into conversations.
+
+Trinidad &amp; Tobago small businesses · From $1,500 TTD · Live in 7 days.">Copy text</button></header>
+  <p class="primary">Customers are searching for you online. What do they find? 👀<br><br>Most people check a business online before they message, visit or buy. If they find nothing, or something outdated, they quietly pick a competitor.<br><br>Portside Digital fixes that with a fast, professional website and a built-in inquiry form, so the searches turn into conversations.<br><br>Trinidad &amp; Tobago small businesses · From $1,500 TTD · Live in 7 days.</p>
+  <div class="fbcard"><div><small>Fix it in 7 days</small><strong>No website? You're invisible.</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">69 words · 1 emoji · headline 29/40 · description 16/30</p></article><article class="ver"><header><span class="badge bB">B</span><b>Proof</b><button class="copy" data-copy="Two builds, two ways to turn visitors into inquiries 📲
+
+Aura Atelier gets a bespoke-request form so brides can describe the piece they want. Our Ribbon &amp; Rose concept gets a custom-order form with event date and budget.
+
+Both are designed mobile-first. See Aura Atelier live: werty573.github.io/demo
+
+Your business could be next. From $1,500 TTD, live in 7 days.">Copy text</button></header>
+  <p class="primary">Two builds, two ways to turn visitors into inquiries 📲<br><br>Aura Atelier gets a bespoke-request form so brides can describe the piece they want. Our Ribbon &amp; Rose concept gets a custom-order form with event date and budget.<br><br>Both are designed mobile-first. See Aura Atelier live: werty573.github.io/demo<br><br>Your business could be next. From $1,500 TTD, live in 7 days.</p>
+  <div class="fbcard"><div><small>See our live work</small><strong>Websites that bring inquiries</strong></div><span class="fbcta">Learn More</span></div>
+  <p class="meta">59 words · 1 emoji · headline 29/40 · description 17/30</p></article><article class="ver"><header><span class="badge bC">C</span><b>Free offer</b><button class="copy" data-copy="Stop being invisible online, and start with a free mockup. 🎁
+
+Tell us about your business and we'll design your homepage for free. You'll see exactly how you'd look to customers who search for you.
+
+No cost, no obligation. If you want the full site, it's live in 7 days, from $1,500 TTD.
+
+Message us on WhatsApp to claim a spot this week.">Copy text</button></header>
+  <p class="primary">Stop being invisible online, and start with a free mockup. 🎁<br><br>Tell us about your business and we'll design your homepage for free. You'll see exactly how you'd look to customers who search for you.<br><br>No cost, no obligation. If you want the full site, it's live in 7 days, from $1,500 TTD.<br><br>Message us on WhatsApp to claim a spot this week.</p>
+  <div class="fbcard"><div><small>Limited spots weekly</small><strong>Be found. Free mockup.</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">63 words · 1 emoji · headline 22/40 · description 20/30</p></article></div></div></section>
+<section class="ad" id="sq4-free-mockup"><h2>Square 4 — Your homepage. Mocked up free.</h2><p class="fmt">1080×1080 feed image · <b>Text cover 18.2%</b></p>
+<div class="grid"><div class="media"><img src="final/sq4-free-mockup.png" alt="" loading="lazy" class=""></div>
+<div class="vers"><article class="ver"><header><span class="badge bA">A</span><b>Pain point</b><button class="copy" data-copy="Customers are searching for you online. What do they find?
+
+If you're not sure, let's fix that, starting free. 🎁
+
+We'll design a homepage mockup for your business with your name, services and colours, so you can see what customers should be finding.
+
+No cost and no obligation. If you want it built, it's live in 7 days, from $1,500 TTD.
+
+Portside Digital · Websites for T&amp;T small businesses.">Copy text</button></header>
+  <p class="primary">Customers are searching for you online. What do they find?<br><br>If you're not sure, let's fix that, starting free. 🎁<br><br>We'll design a homepage mockup for your business with your name, services and colours, so you can see what customers should be finding.<br><br>No cost and no obligation. If you want it built, it's live in 7 days, from $1,500 TTD.<br><br>Portside Digital · Websites for T&amp;T small businesses.</p>
+  <div class="fbcard"><div><small>No cost. No obligation.</small><strong>Your homepage, mocked up free</strong></div><span class="fbcta">Get Quote</span></div>
+  <p class="meta">69 words · 1 emoji · headline 29/40 · description 23/30</p></article><article class="ver"><header><span class="badge bB">B</span><b>Proof</b><button class="copy" data-copy="Before you hire anyone, look at their work. Here's ours 👇
+
+werty573.github.io/demo: luxury bridal hair art
+Plus the handmade accessories shop in this ad
+
+Like what you see? We'll design a homepage mockup for YOUR business for free, so you can judge us on your own site before you pay anything.
+
+Full builds from $1,500 TTD, live in 7 days.">Copy text</button></header>
+  <p class="primary">Before you hire anyone, look at their work. Here's ours 👇<br><br>werty573.github.io/demo: luxury bridal hair art<br>Plus the handmade accessories shop in this ad<br><br>Like what you see? We'll design a homepage mockup for YOUR business for free, so you can judge us on your own site before you pay anything.<br><br>Full builds from $1,500 TTD, live in 7 days.</p>
+  <div class="fbcard"><div><small>Free homepage mockup</small><strong>See our work, then yours free</strong></div><span class="fbcta">Get Quote</span></div>
+  <p class="meta">60 words · 1 emoji · headline 29/40 · description 20/30</p></article><article class="ver"><header><span class="badge bC">C</span><b>Free offer</b><button class="copy" data-copy="FREE: a custom homepage mockup for your business 🎁
+
+Here's how it works:
+1. Tell us your business name and what you do
+2. We design your homepage, free
+3. You decide. Keep it, or let us build the full site in 7 days from $1,500 TTD
+
+We only take a few mockups each week to keep quality high. Tap below to claim yours.">Copy text</button></header>
+  <p class="primary">FREE: a custom homepage mockup for your business 🎁<br><br>Here's how it works:<br>1. Tell us your business name and what you do<br>2. We design your homepage, free<br>3. You decide. Keep it, or let us build the full site in 7 days from $1,500 TTD<br><br>We only take a few mockups each week to keep quality high. Tap below to claim yours.</p>
+  <div class="fbcard"><div><small>Limited spots weekly</small><strong>Claim your free mockup</strong></div><span class="fbcta">Sign Up</span></div>
+  <p class="meta">64 words · 1 emoji · headline 22/40 · description 20/30</p></article></div></div></section>
+<section class="ad" id="carousel"><h2>Carousel — Hook → 2 builds → Your business next?</h2><p class="fmt">4 × 1080×1080 carousel cards · <b>Text cover 19.5%</b></p>
+<div class="grid"><div class="media"><div class="car"><img src="final/car1-hook.png" alt="" loading="lazy"><img src="final/car2-aura.png" alt="" loading="lazy"><img src="final/car3-ribbon.png" alt="" loading="lazy"><img src="final/car4-your-business.png" alt="" loading="lazy"></div><ol class="cards"><li><b>Customers are searching</b> · What do they find?</li><li><b>Bridal hair art studio</b> · See the live site</li><li><b>Handmade accessories shop</b> · Concept build</li><li><b>Your business next?</b> · From $1,500 TTD</li></ol></div>
+<div class="vers"><article class="ver"><header><span class="badge bA">A</span><b>Pain point</b><button class="copy" data-copy="Customers are searching for you online. What do they find? 🔍
+
+Swipe 👉 to see what a Portside Digital website looks like, then picture your business there.
+
+Fast, mobile-first sites for Trinidad &amp; Tobago small businesses. Live in 7 days, from $1,500 TTD.">Copy text</button></header>
+  <p class="primary">Customers are searching for you online. What do they find? 🔍<br><br>Swipe 👉 to see what a Portside Digital website looks like, then picture your business there.<br><br>Fast, mobile-first sites for Trinidad &amp; Tobago small businesses. Live in 7 days, from $1,500 TTD.</p>
+  <div class="fbcard"><div><small>Live in 7 days</small><strong>Your business next?</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">43 words · 2 emoji · headline 19/40 · description 14/30</p></article><article class="ver"><header><span class="badge bB">B</span><b>Proof</b><button class="copy" data-copy="Real websites, built in Trinidad. Swipe through 👉
+
+Card 2: a luxury bridal hair-art studio
+Card 3: a handmade accessories shop with custom orders (concept build)
+
+Tap card 2 to see Aura Atelier live. Then tell us about your business, and we'll show you what yours could look like.
+
+From $1,500 TTD · live in 7 days.">Copy text</button></header>
+  <p class="primary">Real websites, built in Trinidad. Swipe through 👉<br><br>Card 2: a luxury bridal hair-art studio<br>Card 3: a handmade accessories shop with custom orders (concept build)<br><br>Tap card 2 to see Aura Atelier live. Then tell us about your business, and we'll show you what yours could look like.<br><br>From $1,500 TTD · live in 7 days.</p>
+  <div class="fbcard"><div><small>Tap card 2 to visit</small><strong>Real builds. Made in Trinidad.</strong></div><span class="fbcta">Learn More</span></div>
+  <p class="meta">57 words · 1 emoji · headline 30/40 · description 19/30</p></article><article class="ver"><header><span class="badge bC">C</span><b>Free offer</b><button class="copy" data-copy="Swipe 👉 then claim a FREE homepage mockup for your business. 🎁
+
+We'll design it with your name, services and colours, at no cost and with no obligation. If you love it, we build the whole site in 7 days, from $1,500 TTD.
+
+Limited spots each week.">Copy text</button></header>
+  <p class="primary">Swipe 👉 then claim a FREE homepage mockup for your business. 🎁<br><br>We'll design it with your name, services and colours, at no cost and with no obligation. If you love it, we build the whole site in 7 days, from $1,500 TTD.<br><br>Limited spots each week.</p>
+  <div class="fbcard"><div><small>No cost. No obligation.</small><strong>Free homepage mockup</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">47 words · 2 emoji · headline 20/40 · description 23/30</p></article></div></div></section>
+<section class="ad" id="story1-aura"><h2>Story/Reel 1 — Your site could look this good.</h2><p class="fmt">1080×1920 Stories / Reels · <b>Text cover 9.8%</b></p>
+<div class="grid"><div class="media"><img src="final/story1-aura.png" alt="" loading="lazy" class="tall"></div>
+<div class="vers"><article class="ver"><header><span class="badge bA">A</span><b>Pain point</b><button class="copy" data-copy="Customers are searching for you online. What do they find? 🔍 Make it something like this. Mobile-first websites for T&amp;T small businesses, live in 7 days.">Copy text</button></header>
+  <p class="primary">Customers are searching for you online. What do they find? 🔍 Make it something like this. Mobile-first websites for T&amp;T small businesses, live in 7 days.</p>
+  <div class="fbcard"><div><small>From $1,500 TTD</small><strong>Your site could look this good</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">26 words · 1 emoji · headline 30/40 · description 15/30</p></article><article class="ver"><header><span class="badge bB">B</span><b>Proof</b><button class="copy" data-copy="We built this for a bridal hair-art studio ✨ and it's live at werty573.github.io/demo. Yours next? From $1,500 TTD, live in 7 days.">Copy text</button></header>
+  <p class="primary">We built this for a bridal hair-art studio ✨ and it's live at werty573.github.io/demo. Yours next? From $1,500 TTD, live in 7 days.</p>
+  <div class="fbcard"><div><small>See the live site</small><strong>Built by Portside Digital</strong></div><span class="fbcta">Learn More</span></div>
+  <p class="meta">23 words · 1 emoji · headline 25/40 · description 17/30</p></article><article class="ver"><header><span class="badge bC">C</span><b>Free offer</b><button class="copy" data-copy="Get a FREE homepage mockup for your business 🎁 No cost, no obligation. Full sites from $1,500 TTD, live in 7 days.">Copy text</button></header>
+  <p class="primary">Get a FREE homepage mockup for your business 🎁 No cost, no obligation. Full sites from $1,500 TTD, live in 7 days.</p>
+  <div class="fbcard"><div><small>Limited spots weekly</small><strong>Claim your free mockup</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">22 words · 1 emoji · headline 22/40 · description 20/30</p></article></div></div></section>
+<section class="ad" id="story2-ribbon"><h2>Story/Reel 2 — Websites for T&amp;T small businesses.</h2><p class="fmt">1080×1920 Stories / Reels · <b>Text cover 10%</b></p>
+<div class="grid"><div class="media"><img src="final/story2-ribbon.png" alt="" loading="lazy" class="tall"></div>
+<div class="vers"><article class="ver"><header><span class="badge bA">A</span><b>Pain point</b><button class="copy" data-copy="Your customers are on their phones right now, searching. 📱 Can they find you? Portside Digital builds mobile-first websites for Trinidad &amp; Tobago small businesses.">Copy text</button></header>
+  <p class="primary">Your customers are on their phones right now, searching. 📱 Can they find you? Portside Digital builds mobile-first websites for Trinidad &amp; Tobago small businesses.</p>
+  <div class="fbcard"><div><small>Live in 7 days</small><strong>Websites for T&amp;T businesses</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">25 words · 1 emoji · headline 27/40 · description 14/30</p></article><article class="ver"><header><span class="badge bB">B</span><b>Proof</b><button class="copy" data-copy="A handmade accessories shop with gallery filters and a custom-order form 🎀 Yours could work like this. From $1,500 TTD, live in 7 days.">Copy text</button></header>
+  <p class="primary">A handmade accessories shop with gallery filters and a custom-order form 🎀 Yours could work like this. From $1,500 TTD, live in 7 days.</p>
+  <div class="fbcard"><div><small>From $1,500 TTD</small><strong>Built to take custom orders</strong></div><span class="fbcta">Learn More</span></div>
+  <p class="meta">24 words · 1 emoji · headline 27/40 · description 15/30</p></article><article class="ver"><header><span class="badge bC">C</span><b>Free offer</b><button class="copy" data-copy="Free homepage mockup for your business 🎁 Tell us what you do and we'll design it. No obligation. Full builds live in 7 days.">Copy text</button></header>
+  <p class="primary">Free homepage mockup for your business 🎁 Tell us what you do and we'll design it. No obligation. Full builds live in 7 days.</p>
+  <div class="fbcard"><div><small>No cost. No obligation.</small><strong>Get your free mockup</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">24 words · 1 emoji · headline 20/40 · description 23/30</p></article></div></div></section>
+<section class="ad" id="video-portside-19s"><h2>Video — 19s Reel (hook → 2 builds → end card)</h2><p class="fmt">1080×1920 video, 19s (Reels/Stories; 4:5-safe for Feed) · <b>Video</b></p>
+<div class="grid"><div class="media"><video src="final/video-portside-19s.mp4" controls muted loop playsinline preload="metadata" class="tall"></video></div>
+<div class="vers"><article class="ver"><header><span class="badge bA">A</span><b>Pain point</b><button class="copy" data-copy="Customers are searching for you online. What do they find? 🔍
+
+Watch two real websites we built, then picture yours.
+
+Portside Digital: fast, mobile-first websites for Trinidad &amp; Tobago small businesses. Live in 7 days, from $1,500 TTD. Message us on WhatsApp to get started.">Copy text</button></header>
+  <p class="primary">Customers are searching for you online. What do they find? 🔍<br><br>Watch two real websites we built, then picture yours.<br><br>Portside Digital: fast, mobile-first websites for Trinidad &amp; Tobago small businesses. Live in 7 days, from $1,500 TTD. Message us on WhatsApp to get started.</p>
+  <div class="fbcard"><div><small>Live in 7 days</small><strong>What do customers find?</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">45 words · 1 emoji · headline 23/40 · description 14/30</p></article><article class="ver"><header><span class="badge bB">B</span><b>Proof</b><button class="copy" data-copy="19 seconds, 2 websites, built in Trinidad 🎬
+
+Aura Atelier, a luxury bridal hair-art studio (live at werty573.github.io/demo), and Ribbon &amp; Rose, our concept for a handmade accessories shop with custom orders.
+
+Your business next? From $1,500 TTD, live in 7 days.">Copy text</button></header>
+  <p class="primary">19 seconds, 2 websites, built in Trinidad 🎬<br><br>Aura Atelier, a luxury bridal hair-art studio (live at werty573.github.io/demo), and Ribbon &amp; Rose, our concept for a handmade accessories shop with custom orders.<br><br>Your business next? From $1,500 TTD, live in 7 days.</p>
+  <div class="fbcard"><div><small>From $1,500 TTD</small><strong>Real sites, built in T&amp;T</strong></div><span class="fbcta">Learn More</span></div>
+  <p class="meta">42 words · 1 emoji · headline 24/40 · description 15/30</p></article><article class="ver"><header><span class="badge bC">C</span><b>Free offer</b><button class="copy" data-copy="Like what you see? Get a FREE homepage mockup for your business 🎁
+
+No cost, no obligation. We design it with your name, services and colours. If you love it, we build the full site in 7 days, from $1,500 TTD.
+
+Limited spots each week. Message us on WhatsApp.">Copy text</button></header>
+  <p class="primary">Like what you see? Get a FREE homepage mockup for your business 🎁<br><br>No cost, no obligation. We design it with your name, services and colours. If you love it, we build the full site in 7 days, from $1,500 TTD.<br><br>Limited spots each week. Message us on WhatsApp.</p>
+  <div class="fbcard"><div><small>No cost. No obligation.</small><strong>Free homepage mockup</strong></div><span class="fbcta">Send WhatsApp Message</span></div>
+  <p class="meta">49 words · 1 emoji · headline 20/40 · description 23/30</p></article></div></div></section>
+</main>
+<footer>Text cover = share of the canvas under text on a 20px grid (target under 20%). Generated from build/copy.json by build/pages.js.</footer>
+<script>document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='Copied ✓'}catch{b.textContent='Select & copy'}setTimeout(()=>b.textContent='Copy text',1600)}))</script>
+</body></html>
