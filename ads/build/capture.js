@@ -7,12 +7,12 @@ const OUT = path.resolve(__dirname, '../screenshots');
 const SITES = {
   // Bow Expressions tt is a real company and must not be named in ads: its build is shown as the fictional "Ribbon & Rose" concept.
   'ribbon-and-rose': { url: 'https://werty573.github.io/bowexpressionstt/', sections: { about: '#about', gallery: '#gallery', inquiry: '#inquiry' }, rebrand: true,
-    // 6s for the video ad: drift on the hero, then cut to the custom-order form. Skips About (founder-story
-    // placeholder) and stops before the footer (placeholder phone numbers).
-    reel: async top => { const f = await top('#inquiry'); return [{ from: 0, to: 140, dur: 2.6, ease: 'out' }, { from: f - 200, to: f - 40, dur: 3.4, ease: 'out' }]; } },
+    // 7.5s for the video ad: one continuous glide from the hero to the custom-order form,
+    // stopping before the footer (placeholder phone numbers)
+    reel: async top => [{ from: 0, to: 0, dur: 0.6 }, { from: 0, to: (await top('#inquiry')) - 40, dur: 6.9 }] },
   'aura-atelier': { url: 'https://werty573.github.io/demo/', sections: { craft: '#brand', showroom: '#showroom', commission: '#commission' },
-    // 9.5s for the video ad: hold the hero, then glide down to the commission form
-    reel: async top => [{ from: 0, to: 0, dur: 1.5 }, { from: 0, to: await top('#commission'), dur: 8 }] },
+    // 8.5s for the video ad: hold the hero, then glide down to the commission form
+    reel: async top => [{ from: 0, to: 0, dur: 1.2 }, { from: 0, to: await top('#commission'), dur: 7.3 }] },
 };
 
 // Swap the real business name for the fictional concept name everywhere on the page.
@@ -21,6 +21,8 @@ const REBRAND = () => {
   const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   for (let n; (n = w.nextNode());) n.textContent = n.textContent.replace(/Bow Expressions( tt)?/g, 'Ribbon & Rose').replace(/bowexpressionstt/g, 'ribbonandrose');
   document.title = document.title.replace(/Bow Expressions tt/g, 'Ribbon & Rose');
+  // the demo's About section still has unfinished copy; hide that line so it isn't readable mid-scroll
+  document.querySelectorAll('p').forEach(p => { if (p.textContent.includes("[Founder's story placeholder]")) p.remove(); });
 };
 
 async function settle(page) {

@@ -1,5 +1,5 @@
 // 19s 1080x1920 video ad: renders the background + text overlays as PNGs with Playwright,
-// then composites them over the frame-exact reel clips from capture.js (9.5s Aura, 6s Ribbon & Rose) with ffmpeg.
+// then composites them over the frame-exact reel clips from capture.js (8.5s Aura, 7.5s Ribbon & Rose) with ffmpeg.
 // Key content stays inside the centre 1080x1350 band so the 4:5 feed crop keeps it.
 // Run: NODE_PATH=<dir with playwright installed> node video.js
 const { chromium } = require('playwright');
@@ -60,20 +60,21 @@ const layers = {
 
   const L = n => path.join(TMP, `${n}.png`);
   const aura = path.join(SHOTS, 'aura-atelier', 'reel.mp4'), bow = path.join(SHOTS, 'ribbon-and-rose', 'reel.mp4');
-  // timeline: 0–3 hook (Aura hero) · 3–9.5 Aura · 9.5–15.5 Ribbon & Rose concept · 15.5–19 end card
+  // timeline: 0–3 hook (Aura hero) · 3–8.5 Aura · 8.5–16 Ribbon & Rose concept · 16–19 end card
+  const CUT = 8.5, END = 16;
   const fc = [
     `[1:v]setpts=PTS-STARTPTS,scale=${VW}:${VH}:flags=lanczos[va]`,
-    `[2:v]setpts=PTS-STARTPTS+9.5/TB,scale=${VW}:${VH}:flags=lanczos[vb]`,
-    `[0:v][va]overlay=${VX}:${VY}:enable='lt(t,9.5)'[s1]`,
-    `[s1][vb]overlay=${VX}:${VY}:eof_action=pass:enable='gte(t,9.5)'[s2]`,
+    `[2:v]setpts=PTS-STARTPTS+${CUT}/TB,scale=${VW}:${VH}:flags=lanczos[vb]`,
+    `[0:v][va]overlay=${VX}:${VY}:enable='lt(t,${CUT})'[s1]`,
+    `[s1][vb]overlay=${VX}:${VY}:eof_action=pass:enable='gte(t,${CUT})'[s2]`,
     `[3:v]format=rgba[ua]`, `[4:v]format=rgba[ub]`,
-    `[s2][ua]overlay=0:0:enable='lt(t,9.5)'[s3]`, `[s3][ub]overlay=0:0:enable='gte(t,9.5)'[s4]`,
+    `[s2][ua]overlay=0:0:enable='lt(t,${CUT})'[s3]`, `[s3][ub]overlay=0:0:enable='gte(t,${CUT})'[s4]`,
     `[5:v]format=rgba,fade=in:st=0.15:d=0.35:alpha=1,fade=out:st=2.75:d=0.25:alpha=1[th]`,
-    `[6:v]format=rgba,fade=in:st=3.0:d=0.35:alpha=1,fade=out:st=9.2:d=0.3:alpha=1[ta]`,
-    `[7:v]format=rgba,fade=in:st=9.5:d=0.35:alpha=1,fade=out:st=15.2:d=0.3:alpha=1[tb]`,
-    `[8:v]format=rgba,fade=in:st=15.5:d=0.4:alpha=1[te]`,
+    `[6:v]format=rgba,fade=in:st=3.0:d=0.35:alpha=1,fade=out:st=${CUT - 0.3}:d=0.3:alpha=1[ta]`,
+    `[7:v]format=rgba,fade=in:st=${CUT}:d=0.35:alpha=1,fade=out:st=${END - 0.3}:d=0.3:alpha=1[tb]`,
+    `[8:v]format=rgba,fade=in:st=${END}:d=0.4:alpha=1[te]`,
     `[s4][th]overlay=0:0[s5]`, `[s5][ta]overlay=0:0[s6]`, `[s6][tb]overlay=0:0[s7]`,
-    `[s7][te]overlay=0:0:enable='gte(t,15.5)',format=yuv420p[out]`,
+    `[s7][te]overlay=0:0:enable='gte(t,${END})',format=yuv420p[out]`,
   ].join(';');
   const still = (n, t = 19) => ['-loop', '1', '-framerate', '30', '-t', String(t), '-i', L(n)];
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error',
