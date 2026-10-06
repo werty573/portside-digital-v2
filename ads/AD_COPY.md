@@ -428,3 +428,268 @@ Each primary text stays under 125 words, opens with a hook in line 1, and uses 1
 |---|---|---|
 | Free homepage mockup | No cost. No obligation. | Send WhatsApp Message |
 
+---
+
+## Demo video: Tamarind Table (restaurant and rum bar)
+
+**Format:** 1080×1920 video, 16s (Reels/Stories; 4:5-safe for Feed)  
+**File(s):** `final/demo-tamarind-table.mp4`
+
+### Version A: Pain point
+
+**Primary text** _(68 words, 1 emoji)_
+
+> Your food is the best in town. Does your website say so? 🍛
+>
+> Hungry customers check online before they choose where to eat. Give them a menu, photos and a booking button they can't scroll past.
+>
+> This is a concept site we designed for a Trini restaurant: tap through to see it move.
+>
+> Websites for T&T restaurants, bars and food businesses. From $1,500 TTD, live in 7 days.
+
+| Headline (22/40) | Description (27/30) | CTA button |
+|---|---|---|
+| Make them book a table | Restaurant websites, 7 days | Send WhatsApp Message |
+
+### Version B: Proof
+
+**Primary text** _(39 words, 1 emoji)_
+
+> We built a restaurant website from scratch to show what's possible 🍛
+>
+> Menu that slides sideways as you scroll, a story section and a table-booking form.
+>
+> See it live: werty573.github.io/tamarind-table
+>
+> Yours next? From $1,500 TTD, live in 7 days.
+
+| Headline (26/40) | Description (25/30) | CTA button |
+|---|---|---|
+| See our restaurant concept | Concept site, fully built | Learn More |
+
+### Version C: Free offer
+
+**Primary text** _(50 words, 1 emoji)_
+
+> Own a restaurant or food business? Get a FREE homepage mockup 🎁
+>
+> We'll design it with your dishes, your name and your colours. No cost, no obligation. If you love it, we build the full site in 7 days from $1,500 TTD.
+>
+> Message us on WhatsApp to claim a spot.
+
+| Headline (31/40) | Description (23/30) | CTA button |
+|---|---|---|
+| Free mockup for your restaurant | No cost. No obligation. | Send WhatsApp Message |
+
+---
+
+## Demo video: Gloss Lab (car detailing business)
+
+**Format:** 1080×1920 video, 16s (Reels/Stories; 4:5-safe for Feed)  
+**File(s):** `final/demo-gloss-lab.mp4`
+
+### Version A: Pain point
+
+**Primary text** _(52 words, 1 emoji)_
+
+> Your work shines. Does your website? 🚗
+>
+> Detailing customers want proof before they book: before-and-after shots, clear packages and an easy way to get a price.
+>
+> This concept site does all three, with a live quote builder.
+>
+> Websites for T&T car care and service businesses. From $1,500 TTD, live in 7 days.
+
+| Headline (28/40) | Description (26/30) | CTA button |
+|---|---|---|
+| Your work shines. Your site? | Get booked from your phone | Send WhatsApp Message |
+
+### Version B: Proof
+
+**Primary text** _(40 words, 1 emoji)_
+
+> We designed this car-detailing site to show what a service business site can do 🚗
+>
+> Scroll-driven before and after, stacked packages and a quote builder that prices the job.
+>
+> See it live: werty573.github.io/gloss-lab
+>
+> From $1,500 TTD, live in 7 days.
+
+| Headline (25/40) | Description (25/30) | CTA button |
+|---|---|---|
+| See our detailing concept | Concept site, fully built | Learn More |
+
+### Version C: Free offer
+
+**Primary text** _(45 words, 1 emoji)_
+
+> Run a detailing, mechanic or service business? Get a FREE homepage mockup 🎁
+>
+> We design it with your services and prices. No cost, no obligation. Full site in 7 days from $1,500 TTD if you love it.
+>
+> Message us on WhatsApp to claim a spot.
+
+| Headline (29/40) | Description (23/30) | CTA button |
+|---|---|---|
+| Free mockup for your business | No cost. No obligation. | Send WhatsApp Message |
+
+---
+
+## Demo video: Gilded Hour (wedding and event planner)
+
+**Format:** 1080×1920 video, 16s (Reels/Stories; 4:5-safe for Feed)  
+**File(s):** `final/demo-gilded-hour.mp4`
+
+### Version A: Pain point
+
+**Primary text** _(55 words, 1 emoji)_
+
+> Couples judge you online before they ever call 💍
+>
+> If your website doesn't look as good as your events, they'll book the planner whose site does.
+>
+> This is a concept site we designed for a wedding planner, with a services showcase and an inquiry form couples actually finish.
+>
+> From $1,500 TTD, live in 7 days.
+
+| Headline (27/40) | Description (22/30) | CTA button |
+|---|---|---|
+| Look as good as your events | Event websites, 7 days | Send WhatsApp Message |
+
+### Version B: Proof
+
+**Primary text** _(41 words, 1 emoji)_
+
+> We designed this wedding-planner site to show what an events business site can look like 💍
+>
+> A sunset hero that opens as you scroll, a planning timeline and a gallery.
+>
+> See it live: werty573.github.io/gilded-hour
+>
+> From $1,500 TTD, live in 7 days.
+
+| Headline (23/40) | Description (25/30) | CTA button |
+|---|---|---|
+| See our wedding concept | Concept site, fully built | Learn More |
+
+### Version C: Free offer
+
+**Primary text** _(47 words, 1 emoji)_
+
+> Plan weddings, parties or events? Get a FREE homepage mockup 🎁
+>
+> We'll design it around your best photos and services. No cost, no obligation. If you love it, the full site is live in 7 days from $1,500 TTD.
+>
+> Message us on WhatsApp to claim a spot.
+
+| Headline (27/40) | Description (23/30) | CTA button |
+|---|---|---|
+| Free mockup for your events | No cost. No obligation. | Send WhatsApp Message |
+
+---
+
+## Demo video: Pulse Yard (gym)
+
+**Format:** 1080×1920 video, 16s (Reels/Stories; 4:5-safe for Feed)  
+**File(s):** `final/demo-pulse-yard.mp4`
+
+### Version A: Pain point
+
+**Primary text** _(51 words, 1 emoji)_
+
+> New members check your gym online at 11pm. Is your site open? 💪
+>
+> Class times, prices and a free-trial sign-up are what turn a late-night scroll into a new member.
+>
+> This concept gym site has all three.
+>
+> Websites for T&T gyms, trainers and studios. From $1,500 TTD, live in 7 days.
+
+| Headline (24/40) | Description (20/30) | CTA button |
+|---|---|---|
+| Is your gym's site open? | Gym websites, 7 days | Send WhatsApp Message |
+
+### Version B: Proof
+
+**Primary text** _(39 words, 1 emoji)_
+
+> We designed this gym website to show what a fitness business site can do 💪
+>
+> Giant moving headlines, a class schedule by day and a free-week sign-up form.
+>
+> See it live: werty573.github.io/pulse-yard
+>
+> From $1,500 TTD, live in 7 days.
+
+| Headline (19/40) | Description (25/30) | CTA button |
+|---|---|---|
+| See our gym concept | Concept site, fully built | Learn More |
+
+### Version C: Free offer
+
+**Primary text** _(46 words, 1 emoji)_
+
+> Run a gym, studio or personal training business? Get a FREE homepage mockup 🎁
+>
+> We design it with your classes and prices. No cost, no obligation. Full site in 7 days from $1,500 TTD if you love it.
+>
+> Message us on WhatsApp to claim a spot.
+
+| Headline (24/40) | Description (23/30) | CTA button |
+|---|---|---|
+| Free mockup for your gym | No cost. No obligation. | Send WhatsApp Message |
+
+---
+
+## Demo video: Leeward House (villa rental)
+
+**Format:** 1080×1920 video, 16s (Reels/Stories; 4:5-safe for Feed)  
+**File(s):** `final/demo-leeward-house.mp4`
+
+### Version A: Pain point
+
+**Primary text** _(52 words, 1 emoji)_
+
+> Tired of paying booking fees on every stay? 🌴
+>
+> Your own website lets guests check dates and book direct, so more of every night stays with you.
+>
+> This concept villa site has a live availability calendar and pricing.
+>
+> Websites for T&T villas, guesthouses and rentals. From $1,500 TTD, live in 7 days.
+
+| Headline (20/40) | Description (22/30) | CTA button |
+|---|---|---|
+| Take bookings direct | Villa websites, 7 days | Send WhatsApp Message |
+
+### Version B: Proof
+
+**Primary text** _(41 words, 1 emoji)_
+
+> We designed this Tobago villa site to show what a rental website can do 🌴
+>
+> A hero that zooms into the villa, room-by-room panels and a calendar with live pricing.
+>
+> See it live: werty573.github.io/leeward-house
+>
+> From $1,500 TTD, live in 7 days.
+
+| Headline (21/40) | Description (25/30) | CTA button |
+|---|---|---|
+| See our villa concept | Concept site, fully built | Learn More |
+
+### Version C: Free offer
+
+**Primary text** _(48 words, 1 emoji)_
+
+> Rent out a villa, apartment or guesthouse? Get a FREE homepage mockup 🎁
+>
+> We design it around your property and photos. No cost, no obligation. If you love it, the full site is live in 7 days from $1,500 TTD.
+>
+> Message us on WhatsApp to claim a spot.
+
+| Headline (27/40) | Description (23/30) | CTA button |
+|---|---|---|
+| Free mockup for your rental | No cost. No obligation. | Send WhatsApp Message |
+

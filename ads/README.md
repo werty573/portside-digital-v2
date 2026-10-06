@@ -4,7 +4,7 @@ Open **`index.html`** to see every creative next to its copy. It needs a local s
 
 | Path | What |
 |---|---|
-| `final/` | Upload-ready creatives: 4 squares, 4 carousel cards, 2 stories, 1 × 19s video |
+| `final/` | Upload-ready creatives: 4 squares, 4 carousel cards, 2 stories, 1 × 19s video, 5 × 16s demo-site videos (`demo-*.mp4`) |
 | `AD_COPY.md` | A (pain) / B (proof) / C (free offer) copy for each creative |
 | `CAMPAIGN_PLAN.md` | Objective, targeting, budget, Instant Form questions, KPIs |
 | `screenshots/` | Playwright captures of the portfolio sites (hero, sections, scroll recordings) |
@@ -21,5 +21,6 @@ node capture.js            # screenshots + frame-exact scroll recordings (scroll
 
 node render.js             # HTML ads -> final/*.png (+ text-coverage.json)
 node video.js              # final/video-portside-19s.mp4 (needs ffmpeg)
+node demo-videos.js        # final/demo-*.mp4 from the concept sites in ../demos (frame-exact capture)
 node pages.js              # AD_COPY.md + index.html from copy.json, validates copy limits
 ```
